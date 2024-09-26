@@ -1,9 +1,0 @@
-
-
-
-FROM node:22.6
-
-# Copy front files
-WORKDIR /usr/front
-COPY ./ /usr/front
-

@@ -1,17 +1,5 @@
 services:
   
-  front:
-    image: front:latest
-    build:
-      dockerfile: DockerFront
-      context: ./front/
-    
-    ports: 
-      - "3000:3000"
-    command: sh -c "npm install && npm start"
-    networks: 
-      - frontend
-
   service1:
     image: service1:latest
     command: sh -c "npm install && npm start"
@@ -19,7 +7,7 @@ services:
       dockerfile: Docker1
       context:  ./service1/
     ports:
-      - "3001:3001"
+      - "8199:8199"
     networks:
       - backend
       - frontend
@@ -31,7 +19,7 @@ services:
       dockerfile: Docker2
       context:  ./service2/
     ports:
-      - "3002:3002"
+      - "8200:8200"
     networks:
       - backend
       
