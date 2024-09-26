@@ -1,0 +1,5 @@
+front/node_modules
+front/dist
+front/.parcel-cache
+
+service1/node_modules

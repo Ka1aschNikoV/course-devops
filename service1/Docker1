@@ -1,0 +1,14 @@
+
+
+FROM node:19
+
+# Establish workdir
+WORKDIR /usr/service1
+COPY ./ /usr/service1
+# Copy over necessary files
+#COPY ./rabbit-utils ./usr/server_a/rabbit-utils
+#COPY ./utils ./usr/server_a/utils
+##COPY index.js ./usr/server_a/
+#COPY ./api ./usr/server_a/api
+#COPY ./controllers ./usr/server_a/controllers
+#COPY ./service ./usr/server_a/service

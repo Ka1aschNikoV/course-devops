@@ -1,0 +1,40 @@
+services:
+  
+  front:
+    image: front:latest
+    build:
+      dockerfile: DockerFront
+      context: ./front/
+    
+    ports: 
+      - "3000:3000"
+    command: sh -c "npm install && npm start"
+    networks: 
+      - frontend
+
+  service1:
+    image: service1:latest
+    command: sh -c "npm install && npm start"
+    build:
+      dockerfile: Docker1
+      context:  ./service1/
+    ports:
+      - "3001:3001"
+    networks:
+      - backend
+      - frontend
+
+  service2:
+    image: service2:latest
+    command: sh -c "mvn package && java -cp target/service2-1.0-SNAPSHOT.jar service2.App"
+    build:
+      dockerfile: Docker2
+      context:  ./service2/
+    ports:
+      - "3002:3002"
+    networks:
+      - backend
+      
+networks:
+  backend:
+  frontend:
