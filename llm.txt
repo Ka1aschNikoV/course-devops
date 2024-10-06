@@ -1,0 +1,5 @@
+Used: ChatGPT 4o
+Motivation: I tried to do without (just with StackOverflow content), and succeeded until bumped into an unsolvable problem. Tried to solve with LLM and that didnt yield anything either. The problem was that the Java server closed whenever using external JSON libraries, for some fun reason. Solved this with asking ChatGPT for a manual JSON solution that just manually formats JSON.
+Helped in: Formatting a non-library JSON solution, I was not aware of this manual JSONing in Java
+Mistakes: Wasn't aware of the particular use case issue I had
+Could not provide: Wanted solution using a JSON library

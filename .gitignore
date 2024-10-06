@@ -1,5 +1,4 @@
-front/node_modules
-front/dist
-front/.parcel-cache
 
 service1/node_modules
+service2/service2/target/
+.vscode

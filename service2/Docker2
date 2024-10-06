@@ -5,10 +5,3 @@ FROM maven
 # Establish workdir
 WORKDIR /usr/service2
 COPY ./service2 /usr/service2
-# Copy over necessary files
-#COPY ./rabbit-utils ./usr/server_a/rabbit-utils
-#COPY ./utils ./usr/server_a/utils
-##COPY index.js ./usr/server_a/
-#COPY ./api ./usr/server_a/api
-#COPY ./controllers ./usr/server_a/controllers
-#COPY ./service ./usr/server_a/service

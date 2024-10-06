@@ -6,11 +6,11 @@ services:
     build:
       dockerfile: Docker1
       context:  ./service1/
+    # Only service1 accessible from outside
     ports:
       - "8199:8199"
     networks:
       - backend
-      - frontend
 
   service2:
     image: service2:latest
@@ -18,11 +18,10 @@ services:
     build:
       dockerfile: Docker2
       context:  ./service2/
-    ports:
-      - "8200:8200"
+    expose:
+      - 8200
     networks:
       - backend
-      
+    # Connect both to backend
 networks:
   backend:
-  frontend:

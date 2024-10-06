@@ -1,0 +1,13 @@
+docker container ls
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                    NAMES
+727360425bc2   service1:latest   "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes   0.0.0.0:8199->8199/tcp   course-devops-service1-1
+90cdec1246af   service2:latest   "/usr/local/bin/mvn-…"   15 minutes ago   Up 12 minutes   8200/tcp
+
+docker network ls
+NETWORK ID     NAME                       DRIVER    SCOPE
+3dca67212b12   bridge                     bridge    local
+76e50a07c630   course-devops_backend      bridge    local
+6b8d941ebfc7   course-devops_frontend     bridge    local
+e4f525854e5e   host                       host      local
+bc2a8f01ba0c   newdocker_default          bridge    local
+dbdc11078cb5   none                       null      local
