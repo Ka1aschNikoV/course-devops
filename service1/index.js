@@ -20,26 +20,33 @@ async function sh(cmd) {
 app.get('/', async (req,res) => {
 
     //Call service2
-    const response = await fetch("http://service2:8200/")
-    const service2 = await response.json()
+    try  {
+      const response = await fetch("http://service2:8200/")
+      const service2 = await response.json()
+      //Execute commands
+      let processes = await sh('ps -ax');
+      let login = await sh('last reboot');
+      let disk = await sh('df');
+      let ip = await sh('hostname -I');
 
-    //Execute commands
-    let processes = await sh('ps -ax');
-    let login = await sh('last reboot');
-    let disk = await sh('df');
-    let ip = await sh('hostname -I');
-
-    //Format
-    const service1 = {
-      ip: ip,
-      processes: processes,
-      disk: disk,
-      login: login,
-      
+      //Format
+      const service1 = {
+        ip: ip,
+        processes: processes,
+        disk: disk,
+        login: login,
+        
+      }
+      // Response
+      res.json({"service1": service1, "server2": service2})
+      res.end()
     }
-    // Response
-    res.json({"service1": service1, "server2": service2})
-    res.end()
+    catch (e){
+      console.log('Not so fast :)')
+    }
+   
+
+    
         
 })
 
