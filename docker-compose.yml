@@ -1,20 +1,74 @@
 services:
   
-  service1:
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_frontend
+    build:
+      dockerfile: DockerNginx
+      context:  ./nginx/
+    # Only nginx is accessible from outside
+    ports:
+      - "8198:8198" 
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    networks:
+      - frontend_network
+  
+  backend1:
     image: service1:latest
+    container_name: backend1
     command: sh -c "npm install && npm start"
     build:
       dockerfile: Docker1
       context:  ./service1/
-    # Only service1 accessible from outside
-    ports:
-      - "8199:8199"
+    # Only service1 accessible nginx
+    expose:
+     - 8199
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
+      - frontend_network
+      - backend
+
+  backend2:
+    image: service1:latest
+    container_name: backend2
+    command: sh -c "npm install && npm start"
+    build:
+      dockerfile: Docker1
+      context:  ./service1/
+    # Only service1 accessible nginx
+    expose:
+     - 8199
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - frontend_network
+      - backend
+
+  backend3:
+    image: service1:latest
+    container_name: backend3
+    command: sh -c "npm install && npm start"
+    build:
+      dockerfile: Docker1
+      context:  ./service1/
+    # Only service1 accessible nginx
+    expose:
+     - 8199
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - frontend_network
       - backend
 
   service2:
     image: service2:latest
     command: sh -c "mvn package && java -cp target/service2-1.0-SNAPSHOT.jar service2.App"
+    container_name: service2
     build:
       dockerfile: Docker2
       context:  ./service2/
@@ -22,6 +76,11 @@ services:
       - 8200
     networks:
       - backend
-    # Connect both to backend
+
 networks:
+  # Connection between load balanced servers and service2
   backend:
+    driver: bridge
+  # Connection between Nginx front and load balanced servers
+  frontend_network:
+    driver: bridge

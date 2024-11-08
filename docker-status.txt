@@ -1,13 +1,19 @@
 docker container ls
-CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                    NAMES
-727360425bc2   service1:latest   "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes   0.0.0.0:8199->8199/tcp   course-devops-service1-1
-90cdec1246af   service2:latest   "/usr/local/bin/mvn-…"   15 minutes ago   Up 12 minutes   8200/tcp
+CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                            NAMES
+559811c1015b   nginx:latest      "/docker-entrypoint.…"   48 seconds ago   Up 47 seconds   80/tcp, 0.0.0.0:8198->8198/tcp   nginx_frontend
+36a611832e66   service1:latest   "docker-entrypoint.s…"   48 seconds ago   Up 47 seconds   8199/tcp                         backend1
+37254610e573   service2:latest   "/usr/local/bin/mvn-…"   48 seconds ago   Up 47 seconds   8200/tcp                         service2
+dbe48fa05596   service1:latest   "docker-entrypoint.s…"   48 seconds ago   Up 47 seconds   8199/tcp                         backend3
+2bb18aa47a7f   service1:latest   "docker-entrypoint.s…"   48 seconds ago   Up 47 seconds   8199/tcp                         backend2
+
 
 docker network ls
-NETWORK ID     NAME                       DRIVER    SCOPE
-3dca67212b12   bridge                     bridge    local
-76e50a07c630   course-devops_backend      bridge    local
-6b8d941ebfc7   course-devops_frontend     bridge    local
-e4f525854e5e   host                       host      local
-bc2a8f01ba0c   newdocker_default          bridge    local
-dbdc11078cb5   none                       null      local
+NETWORK ID     NAME                             DRIVER    SCOPE
+ff01c447925a   bridge                           bridge    local
+335da41f775a   course-devops_backend            bridge    local
+6eadf79f7599   course-devops_frontend_network   bridge    local
+e4f525854e5e   host                             host      local
+dbdc11078cb5   none                             null      local
+
+(NOTE: Apparently I had some garbage in the docker network ls from previous stuff, 
+removed with docker network prune)
