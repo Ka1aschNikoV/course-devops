@@ -6,12 +6,13 @@ Devops course COMP.SE.140 exercises, made with Node.js and Java
 
 cd in there
 
-- ```docker-compose up –-build```
+- ```docker-compose up --build```
 wait for 10s, 
 
 - then open
 ```localhost:8198``` 
-in your browser of choice
+in your browser of choice (use new private window so there are no old password traces)
+- Find credentials in login.txt, and enter them into the prompt.
 
 - Click and spam request
 
