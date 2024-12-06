@@ -10,7 +10,7 @@ const BASE_URL = 'http://localhost:3000';
 describe('API Tests Without chai-http', () => {
   // Start the server before running the tests
   before((done) => {
-    server = app.listen(3000, done);
+    server = app.listen(8098, done);
   });
 
   // Stop the server after all tests
