@@ -8,6 +8,11 @@ docker-build:
   script:
     - echo "Building and starting services with Docker Compose"
     - docker ps -a
+    - docker rm -f backend3-1
+    - docker rm -f backend2-1
+    - docker rm -f backend1-1
+    - docker rm -f service2
+    - docker rm -f nginx
     - docker-compose up --build  # Use -d to run detached
 
 test-job1:
