@@ -17,6 +17,20 @@ services:
     networks:
       - frontend_network
   
+  gateway:
+    image: gateway:latest
+    container_name: api_gateway
+    build:
+      dockerfile: Gateway
+      context: ./api/
+    
+    expose: 8098
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks: 
+      - gateway
+
   backend1:
     image: service1:latest
     container_name: backend1-1
@@ -32,7 +46,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - frontend_network
+      - gateway
       - backend
 
   backend2:

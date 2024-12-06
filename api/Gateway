@@ -1,0 +1,7 @@
+
+
+FROM node:19
+
+# Establish workdir
+WORKDIR /usr/gateway
+COPY ./ /usr/gateway
