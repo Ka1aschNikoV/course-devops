@@ -24,7 +24,8 @@ services:
       dockerfile: Gateway
       context: ./api/
     
-    expose: 8098
+    expose: 
+      - 8098
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -99,4 +100,7 @@ networks:
     driver: bridge
   # Connection between Nginx front and load balanced servers
   frontend_network:
+    driver: bridge
+
+  gateway:
     driver: bridge
