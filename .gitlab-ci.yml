@@ -35,6 +35,8 @@ test-job1:
   stage: test
   script:
     - echo "Running tests with services up"
+    - npm install
+    - npm test
 
 test-job2:
   stage: test
