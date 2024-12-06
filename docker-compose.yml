@@ -19,7 +19,7 @@ services:
   
   backend1:
     image: service1:latest
-    container_name: backend1
+    container_name: backend1-1
     command: sh -c "npm install && npm start"
     build:
       dockerfile: Docker1
@@ -37,7 +37,7 @@ services:
 
   backend2:
     image: service1:latest
-    container_name: backend2
+    container_name: backend2-1
     command: sh -c "npm install && npm start"
     build:
       dockerfile: Docker1
@@ -53,7 +53,7 @@ services:
 
   backend3:
     image: service1:latest
-    container_name: backend3
+    container_name: backend3-1
     command: sh -c "npm install && npm start"
     build:
       dockerfile: Docker1

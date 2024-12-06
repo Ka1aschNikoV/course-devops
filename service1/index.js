@@ -25,9 +25,9 @@ app.post('/shutdown/', (req, res) => {
   res.status(200).send("All containers shutdown")
   sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop')
   sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop')
-  sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1/stop')
-  sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2/stop')
-  sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3/stop')
+  sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop')
+  sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop')
+  sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop')
   
 });
 
