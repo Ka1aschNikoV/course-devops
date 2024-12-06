@@ -7,7 +7,7 @@ docker-build:
   stage: build
   script:
     - echo "Building and starting services with Docker Compose"
-    - docker-compose up --build -d  # Use -d to run detached
+    - docker-compose up --build  # Use -d to run detached
 
 test-job1:
   stage: test
