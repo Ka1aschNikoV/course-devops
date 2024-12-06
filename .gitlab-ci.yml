@@ -13,7 +13,6 @@ test-job1:
   stage: test
   script:
     - echo "Running tests with services up"
-    - # Add your test commands here
 
 test-job2:
   stage: test
