@@ -31,12 +31,6 @@ docker-build:
     - docker rm -f nginx_frontend
     - docker-compose up --build -d  # Use -d to run detached
 
-jlint-job:
-  stage: test
-  script:
-    - echo "Running JLint"
-    - 
-
 test-job1:
   stage: test
   script:
