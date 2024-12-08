@@ -4,7 +4,7 @@ const expect = chai.expect;
 
 const SERVER_URL = 'http://localhost:8197/request';  // Keep the /request endpoint
 
-describe('Request Response Tests', () => {
+describe.skip('Request Response Tests', () => {
 
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))

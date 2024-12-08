@@ -2,20 +2,10 @@ const chai = require('chai');
 const axios = require('axios');
 const expect = chai.expect;
 
-const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
+const SERVER_URL = 'http://localhost:8197/request';  // Keep the /request endpoint
 
-// Function to query the server state
-async function getServerState() {
-    try {
-        const response = await axios.get(SERVER_URL);
-        
-        return response.data;  // Since response is plain text (not JSON), directly return it
-    } catch (error) {
-        throw new Error(`Failed to query server state: ${error.message}`);
-    }
-}
 
-describe('Server State Tests', () => {
+describe('Server Put State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves
@@ -23,9 +13,9 @@ describe('Server State Tests', () => {
     });
 
 
-    it('should return 200 status code for /state', async () => {
+    it('should return 201 status code for /state', async () => {
         const response = await axios.get(SERVER_URL)
-        expect(response.status).to.equal(200, 'Expected status code 200');
+        expect(response.status).to.equal(201, 'Expected status code 201');
     });
 
     it('should have Content-Type text/plain', async () => {
