@@ -16,10 +16,12 @@
 • **acking**
 • **Deployment**
 • **Operating; monitoring**
+
 ### Example runs of the pipeline ###
 **Include some kind of log of both failing test and passing.**
 ### Reflections ###
 #### Main learnings and worst difficulties ####
+
 **Especially, if you think that something should have been done differently, describe it here.**
 #### Amount effort (hours) used ####
 **Give your estimate**
