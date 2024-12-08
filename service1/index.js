@@ -60,11 +60,12 @@ app.get('/api/', async (req,res) => {
     }
 
     // Response
-    const json = ({"service1": service1, "server2": service2})
+    const json = ({"service1": service1, "service2": service2})
 
     let plainTextResponse = '';
     for (const [key, value] of Object.entries(json)) {
         plainTextResponse += `${key}: ${JSON.stringify(value)}\n`;
+        //console.log(plainTextResponse)
     }
     res.setHeader('Content-Type', 'text/plain');
     res.send(plainTextResponse);

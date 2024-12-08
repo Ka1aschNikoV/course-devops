@@ -59,28 +59,24 @@ describe('Request Response Tests', () => {
     });
 
     it('should have values for subfield keys in service1', async () => {
-
-        // Split the service2 fields into lines and check each for non-empty values
-        const service1Match = body.match(/service1:\s*([\s\S]*?)\n\s*service2:/);
-        const service1Fields = service1Match[1].trim();
-        const service1Lines = service1Fields.split('\n');
-        service1Lines.forEach(line => {
-            const [key, value] = line.split(':');
+        const response = await axios.get(SERVER_URL);
+        const body = response.data;
+        const service1Content = body.split("service1:")
+        const service1ContentSplit = service1Content[1].split('\n')
+        service1ContentSplit.forEach(line => {
+            [key, value] = line.split(':');
             if (value) {
                 expect(value.trim()).to.not.be.empty; // Ensure value is non-empty
             }
         });
-
     })
 
     it('should have values for subfield keys in service2', async () => {
-
-        // Split the service2 fields into lines and check each for non-empty values
-        const service2Match = body.match(/service2:\s*([\s\S]*?)\n\s*$/);
-        const service2Fields = service2Match[1].trim();
-        expect(service2Fields).to.be.null
-        const service2Lines = service2Fields.split('\n');
-        service2Lines.forEach(line => {
+        const response = await axios.get(SERVER_URL);
+        const body = response.data;
+        const service2Content = body.split("service2:")
+        const service2ContentSplit = service2Content[1].split('\n')
+        service2ContentSplit.forEach(line => {
             const [key, value] = line.split(':');
             if (value) {
                 expect(value.trim()).to.not.be.empty; // Ensure value is non-empty
