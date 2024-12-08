@@ -9,28 +9,16 @@ services:
       context:  ./nginx/
     # Only nginx is accessible from outside
     ports:
-      - "8198:8198" 
+    # Browser port
+      - "8198:8198"
+    #Testing REST port
+      - "8197:8197"
     depends_on:
       - backend1
       - backend2
       - backend3
     networks:
       - frontend_network
-  
-  gateway:
-    image: gateway:latest
-    container_name: api_gateway
-    build:
-      dockerfile: Gateway
-      context: ./api/
-    
-    expose: 
-      - 8098
-
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks: 
-      - gateway
 
   backend1:
     image: service1:latest
@@ -47,7 +35,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - gateway
+      - frontend_network
       - backend
 
   backend2:
@@ -100,7 +88,4 @@ networks:
     driver: bridge
   # Connection between Nginx front and load balanced servers
   frontend_network:
-    driver: bridge
-
-  gateway:
     driver: bridge
