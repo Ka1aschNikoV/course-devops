@@ -58,8 +58,18 @@ app.get('/api/', async (req,res) => {
       login: login,
       
     }
+
     // Response
-    res.json({"service1": service1, "server2": service2})
+    const json = ({"service1": service1, "server2": service2})
+
+    let plainTextResponse = '';
+    for (const [key, value] of Object.entries(json)) {
+        plainTextResponse += `${key}: ${JSON.stringify(value)}\n`;
+    }
+    res.setHeader('Content-Type', 'text/plain');
+    res.send(plainTextResponse);
+    res.end()
+    //res.json({"service1": service1, "server2": service2})
     if (!downtimeFlag) {
       downtimeFlag = true;
       console.log('Server is going down for 2 seconds after the response.');
@@ -70,7 +80,7 @@ app.get('/api/', async (req,res) => {
           console.log('Server is back online.');
       }, 2000);  // Delay of 2 seconds
     }
-    res.end()
+    
     
   }
   catch (e){

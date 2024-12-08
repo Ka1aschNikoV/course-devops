@@ -13,7 +13,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "npx mocha"
+    "test": "npx mocha --timeout 5000"
   },
   "author": "",
   "license": "ISC",

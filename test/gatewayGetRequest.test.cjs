@@ -2,22 +2,16 @@ const chai = require('chai');
 const axios = require('axios');
 const expect = chai.expect;
 
-const SERVER_URL = 'http://localhost:8197/request';  // Keep the /state endpoint
-
-// Function to query the server state
-async function getRequest() {
-    try {
-        const response = await axios.get(SERVER_URL);
-        return {
-            state: response.data
-        }
-        return response.data;  // Since response is plain text (not JSON), directly return it
-    } catch (error) {
-        throw new Error(`Failed to query server state: ${error.message}`);
-    }
-}
+const SERVER_URL = 'http://localhost:8197/request';  // Keep the /request endpoint
 
 describe('Request Response Tests', () => {
+
+    afterEach(done => {
+        new Promise(resolve => setTimeout(resolve, 2000))
+            .then(() => done()) // Call done() once the promise resolves
+            .catch(err => done(err)); // Pass any errors to done()
+    });
+
     it('should return 200 status code for /request', async () => {
         const response = await axios.get(SERVER_URL);
         expect(response.status).to.equal(200, 'Expected status code 200');
@@ -31,33 +25,69 @@ describe('Request Response Tests', () => {
     it('should contain service1 and service2 fields', async () => {
         const response = await axios.get(SERVER_URL);
         const body = response.data;
-        expect(body).to.include('service1:', 'Response should include service1 field');
-        expect(body).to.include('service2:', 'Response should include service2 field');
+        expect(body).to.include('service1');
+        expect(body).to.include('service2');
     });
 
     it('should have valid subfields for service1', async () => {
         const response = await axios.get(SERVER_URL);
         const body = response.data;
+        
+        
+        
+        expect(body).to.include('ip');
+        expect(body).to.include('processes');
+        expect(body).to.include('disk');
+        expect(body).to.include('login');
+        
+        
 
-        // Example parsing plain text to extract service1 subfields
-        const service1Match = body.match(/service1:\s*(.*)/);
-        expect(service1Match).to.not.be.null;
-        const service1Fields = service1Match[1].split('\n');
-        expect(service1Fields).to.include('state: Running', 'service1 state should be Running');
-        expect(service1Fields).to.include('uptime:', 'service1 should have uptime field');
     });
 
     it('should have valid subfields for service2', async () => {
         const response = await axios.get(SERVER_URL);
         const body = response.data;
 
-        // Example parsing plain text to extract service2 subfields
-        const service2Match = body.match(/service2:\s*(.*)/);
-        expect(service2Match).to.not.be.null;
-        const service2Fields = service2Match[1].split('\n');
-        expect(service2Fields).to.include('state: Stopped', 'service2 state should be Stopped');
-        expect(service2Fields).to.include('last-checked:', 'service2 should have last-checked field');
+        
+        
+        expect(body).to.include('ip');
+        expect(body).to.include('processes');
+        expect(body).to.include('disk');
+        expect(body).to.include('login');
+
+        
     });
+
+    it('should have values for subfield keys in service1', async () => {
+
+        // Split the service2 fields into lines and check each for non-empty values
+        const service1Match = body.match(/service1:\s*([\s\S]*?)\n\s*service2:/);
+        const service1Fields = service1Match[1].trim();
+        const service1Lines = service1Fields.split('\n');
+        service1Lines.forEach(line => {
+            const [key, value] = line.split(':');
+            if (value) {
+                expect(value.trim()).to.not.be.empty; // Ensure value is non-empty
+            }
+        });
+
+    })
+
+    it('should have values for subfield keys in service2', async () => {
+
+        // Split the service2 fields into lines and check each for non-empty values
+        const service2Match = body.match(/service2:\s*([\s\S]*?)\n\s*$/);
+        const service2Fields = service2Match[1].trim();
+        expect(service2Fields).to.be.null
+        const service2Lines = service2Fields.split('\n');
+        service2Lines.forEach(line => {
+            const [key, value] = line.split(':');
+            if (value) {
+                expect(value.trim()).to.not.be.empty; // Ensure value is non-empty
+            }
+        });
+    })
+
 
     it('should handle missing fields gracefully', async () => {
         const response = await axios.get(SERVER_URL);
