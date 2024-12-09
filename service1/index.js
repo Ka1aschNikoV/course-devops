@@ -60,7 +60,15 @@ app.get('/api/', async (req,res) => {
     }
 
     // Response
-    res.json({"service1": service1, "service2": service2})
+    //res.json({"service1": service1, "service2": service2})
+    const responseJson = ({"service1": service1, "service2": service2})
+    let plainTextResponse = '';
+        for (const [key, value] of Object.entries(responseJson)) {
+            plainTextResponse += `${key}: ${JSON.stringify(value)}\n`;
+            //console.log(plainTextResponse)
+        }
+        res.setHeader('Content-Type', 'text/plain');
+        res.send(plainTextResponse);
     res.end()
     if (!downtimeFlag) {
       downtimeFlag = true;

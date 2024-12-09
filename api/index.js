@@ -4,13 +4,16 @@ const path = require('path');
 const axios = require('axios');
 
 const app = express();
-const PORT = 8197;
-
+const PORT = 8196;
+app.use(express.text());  // Express text parser
+// http://localhost:8196/run-log
 // File path for the state transition log
 const LOG_FILE_PATH = path.join(__dirname, 'run-log.log');
 
 let currentState = 'INIT'; // Default state on startup
 let isPaused = false;      // Indicates if the system is in a paused state
+let isShutdown = false;
+
 
 function initializeLogFile() {
     try {
@@ -41,7 +44,8 @@ function logStateChange(oldState, newState) {
 
 // Endpoint to update the state
 app.put('/state', (req, res) => {
-    const { state } = req.body;
+    const state = req.body;
+    console.log(state)
 
     // Validate the incoming state
     if (!['INIT', 'RUNNING', 'PAUSED', 'SHUTDOWN'].includes(state)) {
@@ -56,10 +60,21 @@ app.put('/state', (req, res) => {
     // Log the state change and update the current state
     const oldState = currentState;
     currentState = state;
+    if(currentState === 'PAUSED') {
+        isPaused = true;
+    }
+    else {
+        isPaused = false;
+    }
+    if(currentState === 'SHUTDOWN') {
+        isShutdown = true;
+    }
+    else {
+        isShutdown = false;
+    }
     logStateChange(oldState, state);
 
     // Handle system behavior based on the new state
-    handleStateChange(state);
 
     res.status(200).send(`State updated to ${state}.`);
 });
@@ -68,6 +83,9 @@ app.put('/state', (req, res) => {
 app.use((req, res, next) => {
     if (isPaused && !(req.path === '/state' && req.method === 'PUT')) {
         return res.status(503).send('System is currently paused. Please try again later.');
+    }
+    if (isShutdown && !(req.path === '/state' && req.method === 'PUT')) {
+        return res.status(503).send('System is currently shutdown. Turn it on to continue use.');
     }
     next();
 });
@@ -90,24 +108,18 @@ app.get('/run-log', (req, res)  => {
     });
 });
 
-app.get('/request', async (req,res)  => {
+/*app.get('/request', async (req,res)  => {
     try {
-        const responseJson =  await axios.get('http://service1:8199/api/');
+        const responseJson =  await axios.get('http://backend1:8199/api/');
         console.log(responseJson)
-        let plainTextResponse = '';
-        for (const [key, value] of Object.entries(responseJson)) {
-            plainTextResponse += `${key}: ${JSON.stringify(value)}\n`;
-            //console.log(plainTextResponse)
-        }
-        res.setHeader('Content-Type', 'text/plain');
-        res.send(plainTextResponse);
+        
     }
     catch (e) {
         console.error('Error requesting service1')
     }
 
    
-})
+})*/
 
 // Start the server
 app.listen(PORT, () => {

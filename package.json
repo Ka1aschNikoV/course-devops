@@ -1,6 +1,5 @@
 {
   "devDependencies": {
-    "axios": "^1.7.9",
     "chai": "5.1.2",
     "mocha": "11.0.1"
   },
@@ -15,5 +14,8 @@
     "test": "npx mocha --timeout 5000"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9"
+  }
 }

@@ -2,9 +2,9 @@ const chai = require('chai');
 const axios = require('axios');
 const expect = chai.expect;
 
-const SERVER_URL = 'http://localhost:8197/request';  // Keep the /request endpoint
+const SERVER_URL = 'http://localhost:8197/request'; // Keep the /request endpoint
 
-describe.skip('Request Response Tests', () => {
+describe('Request Response Tests', () => {
 
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))

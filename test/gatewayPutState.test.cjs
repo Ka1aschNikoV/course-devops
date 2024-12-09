@@ -5,7 +5,7 @@ const expect = chai.expect;
 const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
 
-describe.skip('Server Put State Tests', () => {
+describe('Server Put State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves
@@ -24,12 +24,16 @@ describe.skip('Server Put State Tests', () => {
     });
     
     it('should be in RUNNING state after setting it to RUNNING', async () => {
-        await axios.put(SERVER_URL, 'RUNNING',{
+        // Sending the PUT request with 'RUNNING' state
+        await axios.put(SERVER_URL, 'RUNNING', {
             headers: {
-                'Content-Type': 'text/plain',
+                'Content-Type': 'text/plain',  // Specify the content type
             },
-        })
-        const state = await axios.get(SERVER_URL)
+        });
+    
+        // Get the current state after the PUT request
+        const response = await axios.get(SERVER_URL);
+        const state = response.data;  // Extract the data from the response
         expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
     });
 
@@ -39,14 +43,31 @@ describe.skip('Server Put State Tests', () => {
                 'Content-Type': 'text/plain',
             },
         })
-        const state = await axios.get(SERVER_URL)
-        expect(state).to.equal('PAUSED', 'Expected server to be in PAUSED state after pause');
+        try {
+            // Attempting to access /run-log while in PAUSED state
+            const response = await axios.get(SERVER_URL);
+            
+            // Check if the response status is 503, as expected when the system is paused
+            expect(response.status).to.equal(503, 'Expected server to be inoperable when paused');
+        } catch (error) {
+            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is paused
+            expect(error.response.status).to.equal(503, 'Expected server to return 503 when paused');
+        }
     });
 
     it('should not be operational in PAUSED', async () => {
-        const state = await axios.get(SERVER_URL)
-        expect(state.response).to.equal(503, 'Expected server to be inoperable when paused');
+        try {
+            // Attempting to access /run-log while in PAUSED state
+            const response = await axios.get("http://localhost:8196/run-log");
+            
+            // Check if the response status is 503, as expected when the system is paused
+            expect(response.status).to.equal(503, 'Expected server to be inoperable when paused');
+        } catch (error) {
+            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is paused
+            expect(error.response.status).to.equal(503, 'Expected server to return 503 when paused');
+        }
     });
+    
 
     it('should be in RUNNING state after setting it to RUNNING', async () => {
         await axios.put(SERVER_URL, 'RUNNING',{
@@ -54,13 +75,14 @@ describe.skip('Server Put State Tests', () => {
                 'Content-Type': 'text/plain',
             },
         })
-        const state = await axios.get(SERVER_URL)
+        const response = await axios.get(SERVER_URL);
+        const state = response.data;  // Extract the data from the response
         expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
     });
 
     it('should be operational in RUNNING', async () => {
-        const state = await axios.get(SERVER_URL)
-        expect(state.response).to.equal(200, 'Expected server to be inoperable when paused');
+        const response = await axios.get(SERVER_URL)
+        expect(response.status).to.equal(200, 'Expected server to be inoperable when paused');
     });
 
     it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
@@ -69,13 +91,29 @@ describe.skip('Server Put State Tests', () => {
                 'Content-Type': 'text/plain',
             },
         })
-        const state = await axios.get(SERVER_URL)
-        expect(state).to.equal('SHUTDOWN', 'Expected server to be in RUNNING state');
+        try {
+            // Attempting to access /run-log while in SHUTDOWN state
+            const response = await axios.get(SERVER_URL);
+            
+            // Check if the response status is 503, as expected when the system is shutdown
+            expect(response.status).to.equal(503, 'Expected server to be inoperable when shutdown');
+        } catch (error) {
+            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is shutdown
+            expect(error.response.status).to.equal(503, 'Expected server to return 503 when shutdown');
+        }
     });
 
     it('should not be operational in SHUTDOWN', async () => {
-        const state = await axios.get(SERVER_URL)
-        expect(state.response).to.equal(503, 'Expected server to be inoperable when shutdown');
+        try {
+            // Attempting to access /run-log while in PAUSED state
+            const response = await axios.get("http://localhost:8196/run-log");
+            
+            // Check if the response status is 503, as expected when the system is shutdown
+            expect(response.status).to.equal(503, 'Expected server to be inoperable when shutdown');
+        } catch (error) {
+            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is shutdown
+            expect(error.response.status).to.equal(503, 'Expected server to return 503 when shutdown');
+        }
     });
 
 });
