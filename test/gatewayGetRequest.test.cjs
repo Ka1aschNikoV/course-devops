@@ -4,7 +4,7 @@ const expect = chai.expect;
 
 const SERVER_URL = 'http://localhost:8197/request'; // Keep the /request endpoint
 
-describe.skip('Request Response Tests', () => {
+describe('Request Response Tests', () => {
 
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
@@ -13,24 +13,44 @@ describe.skip('Request Response Tests', () => {
     });
 
     it('should return 200 status code for /request', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         expect(response.status).to.equal(200, 'Expected status code 200');
     });
 
     it('should have Content-Type text/plain', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         expect(response.headers['content-type']).to.include('text/plain', 'Expected Content-Type to be text/plain');
     });
 
     it('should contain service1 and service2 fields', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         const body = response.data;
         expect(body).to.include('service1');
         expect(body).to.include('service2');
     });
 
     it('should have valid subfields for service1', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         const body = response.data;
         
         expect(body).to.include('ip');
@@ -41,7 +61,12 @@ describe.skip('Request Response Tests', () => {
     });
 
     it('should have valid subfields for service2', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         const body = response.data;
         
         expect(body).to.include('ip');
@@ -51,7 +76,12 @@ describe.skip('Request Response Tests', () => {
     });
 
     it('should have values for subfield keys in service1', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         const body = response.data;
         const service1Content = body.split("service1:")
         const service1ContentSplit = service1Content[1].split('\n')
@@ -64,7 +94,12 @@ describe.skip('Request Response Tests', () => {
     })
 
     it('should have values for subfield keys in service2', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         const body = response.data;
         const service2Content = body.split("service2:")
         const service2ContentSplit = service2Content[1].split('\n')
@@ -78,7 +113,12 @@ describe.skip('Request Response Tests', () => {
 
 
     it('should handle missing fields gracefully', async () => {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         const body = response.data;
 
         // Simulate a missing field scenario

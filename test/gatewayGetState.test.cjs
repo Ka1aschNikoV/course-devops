@@ -7,7 +7,12 @@ const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 // Function to query the server state
 async function getServerState() {
     try {
-        const response = await axios.get(SERVER_URL);
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         
         return response.data;  // Since response is plain text (not JSON), directly return it
     } catch (error) {
@@ -15,7 +20,7 @@ async function getServerState() {
     }
 }
 
-describe.skip('Server State Tests', () => {
+describe('Server State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves
@@ -24,12 +29,22 @@ describe.skip('Server State Tests', () => {
 
 
     it('should return 200 status code for /state', async () => {
-        const response = await axios.get(SERVER_URL)
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         expect(response.status).to.equal(200, 'Expected status code 200');
     });
 
     it('should have Content-Type text/plain', async () => {
-        const response = await axios.get(SERVER_URL)
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
         expect(response.headers['content-type']).to.include('text/plain', 'Expected Content-Type to be text/plain');
     });
     
