@@ -12,8 +12,33 @@ describe('Server Put State Tests', () => {
             .catch(err => done(err)); // Pass any errors to done()
     });
 
+    it('should not respond if user is not logged in', async () => {
+        const response = await axios.get(SERVER_URL)
+        expect(response.status).to.equal(401, 'Expected status code 401');
+    });
+    it('should respond if user is logged in', async () => {
+        const response = await axios.get(SERVER_URL, {
+            auth: {
+                username: 'user1',
+                password: 'your_mom',
+            }
+        })
+        
+        expect(response.status).to.equal(200, 'Expected status code 200');
+    });
+
+    it('should log the user in by setting the auth cookie', async () => {
+        const loginResponse = await axios.get('http://localhost:8197/login');
+        expect(loginResponse.status).to.equal(200);
+        expect(loginResponse.data).to.equal('Logged in');
+        
+        // Check that the 'auth' cookie is set
+        expect(loginResponse.headers['set-cookie']).to.exist;
+        expect(loginResponse.headers['set-cookie'][0]).to.include('auth=true');
+    });
 
     it('should return 200 status code for /state', async () => {
+        await axios.get('http://localhost:8197/login');
         const response = await axios.get(SERVER_URL)
         expect(response.status).to.equal(200, 'Expected status code 200');
     });

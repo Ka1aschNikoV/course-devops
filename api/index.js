@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const exec = require('child_process').exec
 
 const app = express();
 const PORT = 8196;
@@ -14,6 +15,17 @@ let currentState = 'INIT'; // Default state on startup
 let isPaused = false;      // Indicates if the system is in a paused state
 let isShutdown = false;
 
+async function sh(cmd) {
+    return new Promise(function (resolve, reject) {
+      exec(cmd, (err, stdout, stderr) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(stdout);
+        }
+      });
+    });
+}
 
 function initializeLogFile() {
     try {
@@ -43,7 +55,7 @@ function logStateChange(oldState, newState) {
 }
 
 // Endpoint to update the state
-app.put('/state', (req, res) => {
+app.put('/state', async (req, res)  => {
     const state = req.body;
     console.log(state)
 
@@ -68,9 +80,11 @@ app.put('/state', (req, res) => {
     }
     if(currentState === 'SHUTDOWN') {
         isShutdown = true;
-    }
-    else {
-        isShutdown = false;
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop')
     }
     logStateChange(oldState, state);
 
