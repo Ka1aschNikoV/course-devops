@@ -24,12 +24,12 @@ docker-build:
   script:
     - echo "Building and starting services with Docker Compose"
     - docker ps -a
-    - docker rm -f backend3-1
-    - docker rm -f backend2-1
-    - docker rm -f backend1-1
-    - docker rm -f service2
-    - docker rm -f nginx_frontend
-    - docker rm -f api_gateway
+    #- docker rm -f backend3-1
+    #- docker rm -f backend2-1
+    #- docker rm -f backend1-1
+    #- docker rm -f service2
+    #- docker rm -f nginx_frontend
+    #- docker rm -f api_gateway
     - docker-compose up --build -d  # Use -d to run detached
 
 test-job:
