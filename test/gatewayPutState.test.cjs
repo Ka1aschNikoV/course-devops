@@ -2,7 +2,7 @@ const chai = require('chai');
 const axios = require('axios');
 const expect = chai.expect;
 
-const SERVER_URL = 'http://localhost:8197/request';  // Keep the /request endpoint
+const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
 
 describe('Server Put State Tests', () => {
@@ -23,23 +23,59 @@ describe('Server Put State Tests', () => {
         expect(response.headers['content-type']).to.include('text/plain', 'Expected Content-Type to be text/plain');
     });
     
-    it('should be in Init state before login from nginx', async () => {
-        const state = await getServerState();
-        expect(state).to.equal('INIT', 'Expected server to be in INIT state before login');
+    it('should be in RUNNING state after setting it to RUNNING', async () => {
+        await axios.put(SERVER_URL, 'RUNNING',{
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        })
+        const state = await axios.get(SERVER_URL)
+        expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
     });
 
-    it('should be in Running state when the server is online and operational', async () => {
-        const state = await getServerState();
-        expect(state).to.deep.equal('RUNNING', 'Expected server to be in RUNNING state when online');
+    it('should be in PAUSED state after setting it to PAUSED', async () => {
+        await axios.put(SERVER_URL, 'PAUSED',{
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        })
+        const state = await axios.get(SERVER_URL)
+        expect(state).to.equal('PAUSED', 'Expected server to be in PAUSED state after pause');
     });
 
-    it('should be in Paused state when the server is paused but online', async () => {
-        const state = await getServerState();
-        expect(state).to.equal('PAUSED', 'Expected server to be in PAUSED state when paused');
+    it('should not be operational in PAUSED', async () => {
+        const state = await axios.get(SERVER_URL)
+        expect(state.response).to.equal(503, 'Expected server to be inoperable when paused');
     });
 
-    it('should be in Shutdown state after receiving a shutdown command', async () => {
-        const state = await getServerState();
-        expect(state).to.equal('SHUTDOWN', 'Expected server to be in SHUTDOWN state after shutdown');
+    it('should be in RUNNING state after setting it to RUNNING', async () => {
+        await axios.put(SERVER_URL, 'RUNNING',{
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        })
+        const state = await axios.get(SERVER_URL)
+        expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
     });
+
+    it('should be operational in RUNNING', async () => {
+        const state = await axios.get(SERVER_URL)
+        expect(state.response).to.equal(200, 'Expected server to be inoperable when paused');
+    });
+
+    it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
+        await axios.put(SERVER_URL, 'SHUTDOWN',{
+            headers: {
+                'Content-Type': 'text/plain',
+            },
+        })
+        const state = await axios.get(SERVER_URL)
+        expect(state).to.equal('SHUTDOWN', 'Expected server to be in RUNNING state');
+    });
+
+    it('should not be operational in SHUTDOWN', async () => {
+        const state = await axios.get(SERVER_URL)
+        expect(state.response).to.equal(503, 'Expected server to be inoperable when shutdown');
+    });
+
 });
