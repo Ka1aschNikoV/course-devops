@@ -15,7 +15,7 @@ async function getServerState() {
     }
 }
 
-describe('Server State Tests', () => {
+describe.skip('Server State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves

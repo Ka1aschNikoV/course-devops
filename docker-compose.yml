@@ -4,6 +4,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx_frontend
+    
     build:
       dockerfile: DockerNginx
       context:  ./nginx/
@@ -11,14 +12,30 @@ services:
     ports:
     # Browser port
       - "8198:8198"
-    #Testing REST port
-      - "8197:8197"
+    
     depends_on:
       - backend1
       - backend2
       - backend3
     networks:
       - frontend_network
+
+  api:
+    image: api:latest
+    container_name: api_gateway
+    command: sh -c "npm install && npm start"
+    build:
+      dockerfile: DockerApi
+      context: ./api/
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports: 
+    # Testing port
+      - "8197:8197"
+
+    networks:
+      - frontend_network
+    
 
   backend1:
     image: service1:latest

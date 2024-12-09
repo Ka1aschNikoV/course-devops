@@ -22,6 +22,6 @@ describe('Server Log Tests', () => {
     });
     it('response should not be empty', async () => {
         const response = await axios.get(SERVER_URL);
-        expect(response.data).to.not.be.empty()
+        expect(response.data).to.not.be.empty
     });
 });

@@ -1,0 +1,7 @@
+
+
+FROM node:19
+
+# Establish workdir
+WORKDIR /usr/api_gateway
+COPY ./ /usr/api_gateway

@@ -33,29 +33,21 @@ describe.skip('Request Response Tests', () => {
         const response = await axios.get(SERVER_URL);
         const body = response.data;
         
-        
-        
         expect(body).to.include('ip');
         expect(body).to.include('processes');
         expect(body).to.include('disk');
         expect(body).to.include('login');
-        
-        
 
     });
 
     it('should have valid subfields for service2', async () => {
         const response = await axios.get(SERVER_URL);
         const body = response.data;
-
-        
         
         expect(body).to.include('ip');
         expect(body).to.include('processes');
         expect(body).to.include('disk');
         expect(body).to.include('login');
-
-        
     });
 
     it('should have values for subfield keys in service1', async () => {
