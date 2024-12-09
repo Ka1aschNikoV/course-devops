@@ -4,16 +4,16 @@ stages:
   - test
   - deploy
 
-jlint-job:
-  stage: lint
-  image: openjdk:17  # Use a Java image that matches your project
-  script:
-    - echo "Downloading JLint..."
-    - wget https://jlint.com/jlint.jar -O jlint.jar
-    - echo "Running JLint..."
-    - java -jar jlint.jar ./service2/service2/src  # Replace 'src' with your Java source folder
-  allow_failure: true  # Fail the pipeline if JLint finds issues
 
+eslint-job:
+  stage: lint
+  image: node:latest
+  script:
+    - npm install
+    - npm run lint
+  only:
+    - merge_requests
+    - main
 build-job:
   stage: build
   script:
@@ -38,7 +38,7 @@ test-job:
     - echo "Running tests with services up"
     - npm install
     - npm test
-    
+
 deploy-prod:
   stage: deploy
   script:
