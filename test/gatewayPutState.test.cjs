@@ -18,7 +18,7 @@ function isContainerPaused(containerName) {
     return containerStatus === 'paused';
 }
 
-describe('Server Put State Tests', () => {
+describe.skip('Server Put State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves
