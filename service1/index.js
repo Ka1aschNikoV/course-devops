@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const app = express()
 const port = 8199
-const redis = require('redis');
+const Redis = require('ioredis');
+
+
 
 // Flag to track downtime
 let downtimeFlag = false;  
@@ -12,44 +14,38 @@ app.use(express.text());  // Express text parser
 
 const LOG_FILE_PATH = path.join(__dirname, 'run-log.log');
 
-let isPaused = false;      // Indicates if the system is in a paused state
-let isShutdown = false;
 
-const client = redis.createClient({
-  socket: {
-      host: process.env.REDIS_HOST || 'localhost',
-      port: 6379
-  }
+const redis = new Redis({
+  host: process.env.REDIS_HOST || "redis", // This points to the Redis container
+  port: 6379,
 });
-client.connect();
 
+async function setSystemState(state) {
+  if (["RUNNING", "INIT", "SHUTDOWN", "PAUSED"].includes(state)) {
+    try {
+      await redis.set('system_state', state);
+      console.log(`System state updated to: ${state}`);
 
-
-// Function to set system state
-function setSystemState(state) {
-  if (['RUNNING', 'INIT', 'SHUTDOWN', 'PAUSED'].includes(state)) {
-      client.set('system_state', state, (err, reply) => {
-          if (err) {
-              console.error('Error setting system state:', err);
-          } else {
-              console.log(`System state updated to: ${state}`);
-          }
-      });
+      const currState = await redis.get('system_state');
+      console.log('Current system state:', currState);
+    } catch (err) {
+      console.error('Error setting or getting system state:', err);
+    }
   } else {
-      console.error('Invalid state value');
+    console.log('Invalid state value');
   }
 }
 
-function getSystemState() {
-  client.get('system_state', (err, reply) => {
-      if (err) {
-          console.error('Error getting system state:', err);
-      } else {
-          console.log('Current system state:', reply); // Will be one of 'RUNNING', 'INIT', 'SHUTDOWN', 'PAUSED'
-      }
-  });
+async function getSystemState() {
+  try {
+    const state = await redis.get('system_state');
+    console.log('Current system state:', state); // Logs the current state from Redis
+    return state;  // Returns the state retrieved from Redis
+  } catch (err) {
+    console.error('Error getting system state:', err);
+    return null; // In case of an error, return null or handle it as needed
+  }
 }
-
 // Runs linux command given a parameter
 async function sh(cmd) {
     return new Promise(function (resolve, reject) {
@@ -75,14 +71,16 @@ app.post('/shutdown', (req, res) => {
   
 });
 
-function initializeLogFile() {
+async function initializeLogFile() {
   try {
       // Ensure the log file exists and is empty
+      const currState = await getSystemState()
       fs.writeFileSync(LOG_FILE_PATH, '', { flag: 'w' });
       const timestamp = new Date().toISOString();
-      const logEntry = `${timestamp}: ${getSystemState()}`;
+      const logEntry = `${timestamp}: ${currState}`;
       fs.appendFileSync(LOG_FILE_PATH, logEntry, 'utf8');
       console.log(`Log file initialized: ${LOG_FILE_PATH}`);
+      console.log(logEntry)
   } catch (error) {
       console.error(`Failed to initialize log file: ${error.message}`);
   }
@@ -104,85 +102,75 @@ function logStateChange(oldState, newState) {
 
 // Endpoint to update the state
 app.put('/state', async (req, res)  => {
-  if (getSystemState() === "INIT" && req.headers['x-authenticated-user']) {
+  console.log("bruh")
+  const currState = await getSystemState()
+  console.log(currState)
+  console.log(req.headers)
+  if (currState === "INIT" && !req.headers['x-authenticated-user']) {
     res.status(403).send("Please login before use!");
   }
-  const state = req.body;
-  console.log(state)
-
-
-  // Validate the incoming state
-  if (!['INIT', 'RUNNING', 'PAUSED', 'SHUTDOWN'].includes(state)) {
-      return res.status(400).send('Invalid state. Allowed states: INIT, RUNNING, PAUSED, SHUTDOWN.');
-  }
-
-  // Check if the state is actually changing
-  if (state === getSystemState()) {
-      return res.status(200).send(`State is already ${state}. No changes made.`);
-  }
-
-  // Log the state change and update the current state
-  const oldState = getSystemState();
-  if(state === 'PAUSED') {
-      isPaused = true;
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/pause')
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/pause')
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/pause')
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/pause')
-      //sh('docker pause nginx_frontend')
-  }
   else {
-      isPaused = false;
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/pause')
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/pause')
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/pause')
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/pause')
-      //sh('docker unpause nginx_frontend')
-  }
-  if(state === 'SHUTDOWN') {
-      isShutdown = true;
+    const state = req.body;
+    console.log(state)
+  
+  
+    // Validate the incoming state
+    if (!['INIT', 'RUNNING', 'PAUSED', 'SHUTDOWN'].includes(state)) {
+        return res.status(400).send('Invalid state. Allowed states: INIT, RUNNING, PAUSED, SHUTDOWN.');
+    }
+  
+    // Check if the state is actually changing
+    if (state === currState) {
+        return res.status(200).send(`State is already ${state}. No changes made.`);
+    }
+  
+    // Log the state change and update the current state
+    const oldState = currState;
+    
+    
+    setSystemState(state);
+    logStateChange(oldState, state);
+    
+  
+    // Handle system behavior based on the new state
+  
+    res.status(200).send(`State updated to ${state}.`);
+    if(state === 'SHUTDOWN') {
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop')
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop')
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop')
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop')
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop')
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/api_gateway/stop')
+      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop')
+    } 
   }
-  setSystemState(state);
-  logStateChange(oldState, state);
-
-  // Handle system behavior based on the new state
-
-  res.status(200).send(`State updated to ${state}.`);
+  
 });
 
 // Middleware to block operations if the system is paused
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   
-  
-  if (isPaused && !(req.path === '/state' && req.method === 'PUT')) {
-      return res.status(503).send('System is currently paused. Please try again later.');
+  const currState = await getSystemState()
+  if (currState === "PAUSED" && !(req.path === '/state' && req.method === 'PUT')) {
+    res.status(503).send('System is currently paused. Please try again later.');
   }
-  if (isShutdown && !(req.path === '/state' && req.method === 'PUT')) {
-      return res.status(503).send('System is currently shutdown. Turn it on to continue use.');
+  else if (currState === "SHUTDOWN" && !(req.path === '/state' && req.method === 'PUT')) {
+    res.status(503).send('System is currently shutdown. Turn it on to continue use.');
   }
-  next();
+  else {
+    next();
+  }
 });
 
-app.get('/state', (req, res) => {
-  if(getSystemState() === 'INIT') {
-    setSystemState("RUNNING")
-  }
+app.get('/state', async (req, res) => {
+  const currState = await getSystemState()
   res.setHeader('Content-Type', 'text/plain'); // Respond as plain text
-  res.status(200).send(getSystemState());
+  res.status(200).send(currState);
 });
 
 // API to fetch the run log
-app.get('/run-log', (req, res)  => {
-  if(getSystemState() === 'INIT') {
-    setSystemState("RUNNING")
-  }
-  
+app.get('/run-log', async (req, res)  => {
   fs.readFile(LOG_FILE_PATH, 'utf8', (err, data) => {
       if (err) {
           console.error('Error reading log file:', err);
@@ -252,9 +240,9 @@ app.get('/api', async (req,res) => {
       
 })
 
-app.listen(port, () => {
+app.listen(port, async () => {
   
-  setSystemState("INIT");
-  initializeLogFile();
+  await setSystemState("INIT")
+  await initializeLogFile()
   console.log(`Listening on port ${port}!`);
 })

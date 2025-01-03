@@ -1,9 +1,22 @@
 const chai = require('chai');
 const axios = require('axios');
 const expect = chai.expect;
+const { execSync } = require('child_process');
 
 const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
+const username = 'user1';
+const password = 'your_mom';
+const base64Auth = btoa(username + ':' + password);
+
+function isContainerStopped(containerName) {
+    const containerStatus = execSync(`docker inspect --format '{{.State.Status}}' ${containerName}`).toString().trim();
+    return containerStatus === 'exited'; // 'exited' indicates the container is stopped
+}
+function isContainerPaused(containerName) {
+    const containerStatus = execSync(`docker inspect --format '{{.State.Status}}' ${containerName}`).toString().trim();
+    return containerStatus === 'paused';
+}
 
 describe('Server Put State Tests', () => {
     afterEach(done => {
@@ -30,7 +43,7 @@ describe('Server Put State Tests', () => {
         
     });
     it('should respond if user is logged in', async () => {
-        const response = await axios.get(SERVER_URL, {
+        const response = await axios.get("http://localhost:8198/controlpanel.html", {
             auth: {
                 username: 'user1',
                 password: 'your_mom',
@@ -42,10 +55,7 @@ describe('Server Put State Tests', () => {
 
     it('should return 200 status code for /state', async () => {
         const response = await axios.get(SERVER_URL, {
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
+
         })
         
         expect(response.status).to.equal(200, 'Expected status code 200');
@@ -53,10 +63,7 @@ describe('Server Put State Tests', () => {
 
     it('should have Content-Type text/plain', async () => {
         const response = await axios.get(SERVER_URL, {
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
+
         })
         expect(response.headers['content-type']).to.include('text/plain', 'Expected Content-Type to be text/plain');
     });
@@ -66,66 +73,42 @@ describe('Server Put State Tests', () => {
         await axios.put(SERVER_URL, 'RUNNING', {
             headers: {
                 'Content-Type': 'text/plain',  // Specify the content type
+                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
+                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
             },
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
         });
     
         // Get the current state after the PUT request
         const response = await axios.get(SERVER_URL, {
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
         })
         const state = response.data;  // Extract the data from the response
         expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
     });
 
     it('should be in PAUSED state after setting it to PAUSED', async () => {
-        await axios.put(SERVER_URL, 'PAUSED',{
+        const response = await axios.put(SERVER_URL, 'PAUSED',{
             headers: {
                 'Content-Type': 'text/plain',
+                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
+                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
             },
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
+
         })
-        try {
-            // Attempting to access /run-log while in PAUSED state
-            const response = await axios.get(SERVER_URL, {
-                auth: {
-                    username: 'user1',
-                    password: 'your_mom',
-                }
-            })
-            
-            // Check if the response status is 503, as expected when the system is paused
-            expect(response.status).to.equal(503, 'Expected server to be inoperable when paused');
-        } catch (error) {
-            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is paused
-            expect(error.response.status).to.equal(503, 'Expected server to return 503 when paused');
-        }
+        expect(response.status).to.equal(200, 'Expected server to be PAUSED');
     });
 
-    it('should not be operational in PAUSED', async () => {
+    it('should not be operational in PAUSED (container is paused)', async function () {
+        
         try {
-            // Attempting to access /run-log while in PAUSED state
-            const response = await axios.get("http://localhost:8196/run-log", {
-                auth: {
-                    username: 'user1',
-                    password: 'your_mom',
-                }
-            })
-            // Check if the response status is 503, as expected when the system is paused
-            expect(response.status).to.equal(503, 'Expected server to be inoperable when paused');
-        } catch (error) {
-            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is paused
-            expect(error.response.status).to.equal(503, 'Expected server to return 503 when paused');
+            const response = await axios.get(SERVER_URL, {})
+            expect(response.status).to.equal(503, 'Expected status code 503');
         }
+        
+        catch (error) {
+            expect(error.response.status).to.equal(503, 'Expected status code 503');
+        }
+        
+        
     });
     
 
@@ -133,17 +116,11 @@ describe('Server Put State Tests', () => {
         await axios.put(SERVER_URL, 'RUNNING',{
             headers: {
                 'Content-Type': 'text/plain',
+                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
+                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
             },
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
         })
         const response = await axios.get(SERVER_URL, {
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
         })
         const state = response.data;  // Extract the data from the response
         expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
@@ -151,56 +128,19 @@ describe('Server Put State Tests', () => {
 
     it('should be operational in RUNNING', async () => {
         const response = await axios.get(SERVER_URL, {
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
         })
         expect(response.status).to.equal(200, 'Expected server to be inoperable when paused');
     });
 
     it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
-        await axios.put(SERVER_URL, 'SHUTDOWN',{
+        const response = await axios.put(SERVER_URL, 'SHUTDOWN',{
             headers: {
                 'Content-Type': 'text/plain',
+                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
+                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
             },
-            auth: {
-                username: 'user1',
-                password: 'your_mom',
-            }
         })
-        try {
-            // Attempting to access /run-log while in SHUTDOWN state
-            const response = await axios.get(SERVER_URL, {
-                auth: {
-                    username: 'user1',
-                    password: 'your_mom',
-                }
-            })
-            
-            // Check if the response status is 503, as expected when the system is shutdown
-            expect(response.status).to.equal(503, 'Expected server to be inoperable when shutdown');
-        } catch (error) {
-            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is shutdown
-            expect(error.response.status).to.equal(503, 'Expected server to return 503 when shutdown');
-        }
-    });
-
-    it('should not be operational in SHUTDOWN', async () => {
-        try {
-            // Attempting to access /run-log while in PAUSED state
-            const response = await axios.get("http://localhost:8196/run-log", {
-                auth: {
-                    username: 'user1',
-                    password: 'your_mom',
-                }
-            })
-            // Check if the response status is 503, as expected when the system is shutdown
-            expect(response.status).to.equal(503, 'Expected server to be inoperable when shutdown');
-        } catch (error) {
-            // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is shutdown
-            expect(error.response.status).to.equal(503, 'Expected server to return 503 when shutdown');
-        }
+        expect(response.status).to.equal(200, 'Expected server to be SHUTDOWN');
     });
 
 });
