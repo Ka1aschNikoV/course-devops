@@ -1,7 +1,6 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
 const exec = require('child_process').exec
 
 const app = express();
@@ -59,6 +58,7 @@ app.put('/state', async (req, res)  => {
     const state = req.body;
     console.log(state)
 
+
     // Validate the incoming state
     if (!['INIT', 'RUNNING', 'PAUSED', 'SHUTDOWN'].includes(state)) {
         return res.status(400).send('Invalid state. Allowed states: INIT, RUNNING, PAUSED, SHUTDOWN.');
@@ -74,9 +74,19 @@ app.put('/state', async (req, res)  => {
     currentState = state;
     if(currentState === 'PAUSED') {
         isPaused = true;
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/pause')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/pause')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/pause')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/pause')
+        //sh('docker pause nginx_frontend')
     }
     else {
         isPaused = false;
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/pause')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/pause')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/pause')
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/pause')
+        //sh('docker unpause nginx_frontend')
     }
     if(currentState === 'SHUTDOWN') {
         isShutdown = true;
@@ -96,6 +106,7 @@ app.put('/state', async (req, res)  => {
 
 // Middleware to block operations if the system is paused
 app.use((req, res, next) => {
+    
     if (isPaused && !(req.path === '/state' && req.method === 'PUT')) {
         return res.status(503).send('System is currently paused. Please try again later.');
     }
@@ -106,12 +117,19 @@ app.use((req, res, next) => {
 });
 
 app.get('/state', (req, res) => {
+    if(currentState === 'INIT') {
+        currentState = 'RUNNING'
+    }
     res.setHeader('Content-Type', 'text/plain'); // Respond as plain text
     res.status(200).send(currentState);
 });
 
 // API to fetch the run log
 app.get('/run-log', (req, res)  => {
+    if(currentState === 'INIT') {
+        currentState = 'RUNNING'
+    }
+    
     fs.readFile(LOG_FILE_PATH, 'utf8', (err, data) => {
         if (err) {
             console.error('Error reading log file:', err);

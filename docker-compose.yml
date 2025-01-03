@@ -49,13 +49,16 @@ services:
     # Only service1 accessible nginx
     expose:
      - 8199
-
+    depends_on:
+      - redis
     # Allow termination of containers with this volume
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - frontend_network
       - backend
+    environment:
+      REDIS_HOST: redis
 
   backend2:
     image: service1:latest
@@ -67,11 +70,15 @@ services:
     # Only service1 accessible nginx
     expose:
      - 8199
+    depends_on:
+      - redis
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - frontend_network
       - backend
+    environment:
+      REDIS_HOST: redis
 
   backend3:
     image: service1:latest
@@ -83,11 +90,15 @@ services:
     # Only service1 accessible nginx
     expose:
      - 8199
+    depends_on:
+      - redis
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - frontend_network
       - backend
+    environment:
+      REDIS_HOST: redis
 
   service2:
     image: service2:latest
@@ -100,6 +111,13 @@ services:
       - 8200
     networks:
       - backend
+  
+
+  redis:
+    image: redis
+    container_name: redis
+    networks:
+      - frontend_network
 
 networks:
   # Connection between load balanced servers and service2

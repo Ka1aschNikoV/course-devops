@@ -5,7 +5,6 @@ const path = require('path');
 const app = express()
 const port = 8199
 const redis = require('redis');
-const client = redis.createClient();
 
 // Flag to track downtime
 let downtimeFlag = false;  
@@ -15,11 +14,16 @@ const LOG_FILE_PATH = path.join(__dirname, 'run-log.log');
 
 let isPaused = false;      // Indicates if the system is in a paused state
 let isShutdown = false;
-// Runs linux command given a parameter
 
-client.on('connect', () => {c
-  console.log('Connected to Redis');
+const client = redis.createClient({
+  socket: {
+      host: process.env.REDIS_HOST || 'localhost',
+      port: 6379
+  }
 });
+client.connect();
+
+
 
 // Function to set system state
 function setSystemState(state) {
@@ -46,7 +50,7 @@ function getSystemState() {
   });
 }
 
-
+// Runs linux command given a parameter
 async function sh(cmd) {
     return new Promise(function (resolve, reject) {
       exec(cmd, (err, stdout, stderr) => {
@@ -60,7 +64,7 @@ async function sh(cmd) {
 }
 
 // Kill all containers, takes about 10 seconds for others than nginx
-app.post('/shutdown/', (req, res) => {
+app.post('/shutdown', (req, res) => {
   console.log('Shutdown request received. Sending command to host machine.');
   res.status(200).send("All containers shutdown")
   sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop')
@@ -100,6 +104,9 @@ function logStateChange(oldState, newState) {
 
 // Endpoint to update the state
 app.put('/state', async (req, res)  => {
+  if (getSystemState() === "INIT" && req.headers['x-authenticated-user']) {
+    res.status(403).send("Please login before use!");
+  }
   const state = req.body;
   console.log(state)
 
@@ -152,9 +159,7 @@ app.put('/state', async (req, res)  => {
 // Middleware to block operations if the system is paused
 app.use((req, res, next) => {
   
-  if (getSystemState() === "INIT" && req.headers['x-authenticated-user']) {
-      return res.status(403).send("Please login before use!");
-  }
+  
   if (isPaused && !(req.path === '/state' && req.method === 'PUT')) {
       return res.status(503).send('System is currently paused. Please try again later.');
   }
@@ -190,7 +195,7 @@ app.get('/run-log', (req, res)  => {
 });
 
 //Request info from services
-app.get('/api/', async (req,res) => {
+app.get('/api', async (req,res) => {
   console.log("service1")
 
   // If service is marked as down, bounce the request
@@ -248,6 +253,7 @@ app.get('/api/', async (req,res) => {
 })
 
 app.listen(port, () => {
+  
   setSystemState("INIT");
   initializeLogFile();
   console.log(`Listening on port ${port}!`);

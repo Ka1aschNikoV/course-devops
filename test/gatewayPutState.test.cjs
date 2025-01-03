@@ -12,14 +12,20 @@ describe('Server Put State Tests', () => {
             .catch(err => done(err)); // Pass any errors to done()
     });
 
-    it('should not respond if user is not logged in', async () => {
+
+
+    it('should not respond if state is INIT and state change is attempted', async () => {
         try {
-            const response = await axios.get(SERVER_URL)
-            expect(response.status).to.equal(401, 'Expected status code 401');
+            const response = await axios.put(SERVER_URL, "RUNNING", {
+                headers: {
+                    'Content-Type': 'text/plain',  // Specify the content type
+                }
+            })
+            expect(response.status).to.equal(403, 'Expected status code 403');
         }
         catch (error) {
             // If an error occurs (e.g., 503 response), we expect the 503 status to indicate the system is paused
-            expect(error.response.status).to.equal(401, 'Expected status code 401');
+            expect(error.response.status).to.equal(403, 'Expected status code 403');
         }
         
     });

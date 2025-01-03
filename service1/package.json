@@ -12,6 +12,7 @@
   "dependencies": {
     "child_process": "^1.0.2",
     "express": "^4.21.0",
+    "generic-pool": "^3.9.0",
     "redis": "^4.7.0"
   }
 }
