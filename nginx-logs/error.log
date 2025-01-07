@@ -1,0 +1,1 @@
+2025/01/07 15:03:33 [emerg] 1#1: host not found in upstream "backend1-1:8199" in /etc/nginx/nginx.conf:11

@@ -9,16 +9,7 @@ const username = 'user1';
 const password = 'your_mom';
 const base64Auth = btoa(username + ':' + password);
 
-function isContainerStopped(containerName) {
-    const containerStatus = execSync(`docker inspect --format '{{.State.Status}}' ${containerName}`).toString().trim();
-    return containerStatus === 'exited'; // 'exited' indicates the container is stopped
-}
-function isContainerPaused(containerName) {
-    const containerStatus = execSync(`docker inspect --format '{{.State.Status}}' ${containerName}`).toString().trim();
-    return containerStatus === 'paused';
-}
-
-describe.skip('Server Put State Tests', () => {
+describe('Server Put State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves
@@ -131,6 +122,22 @@ describe.skip('Server Put State Tests', () => {
         })
         expect(response.status).to.equal(200, 'Expected server to be inoperable when paused');
     });
+
+    it('should be resetted when RUNNING -> INIT'), async () => {
+        const response = await axios.put(SERVER_URL, 'INIT',{
+            headers: {
+                'Content-Type': 'text/plain',
+                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
+                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
+            },
+        })
+        const state = response.data;  // Extract the data from the response
+        expect(state).to.equal('INIT', 'Expected server to be in RUNNING state');
+
+        const responseLogs = await axios.get("http://localhost:8197/run-log")
+        expect(responseLogs.data).to.equal("", "Expected logs to be wiped")
+
+    }
 
     it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
         const response = await axios.put(SERVER_URL, 'SHUTDOWN',{
