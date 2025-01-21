@@ -14,8 +14,7 @@ shutdown_timeout = 0
   token = "glrt-t3_LrCbzqsJ_Uqj4F_NsDyr"
   token_obtained_at = 2025-01-21T08:02:01Z
   token_expires_at = 0001-01-01T00:00:00Z
-  executor = "shell"
-  pre_build_script = "source ~/.bashrc" # Source the shell profile
+  executor = "docker"
   [runners.custom_build_dir]
   [runners.cache]
     MaxUploadedArchiveSize = 0
