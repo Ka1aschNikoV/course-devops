@@ -1,0 +1,8 @@
+[[runners]]
+  name = "devops"
+  url = "https://compse140.devops-gitlab.rd.tuni.fi" # Your GitLab instance URL
+  token = "GR13489417YuPiSc5HHvDdsDcdxyo"
+  executor = "docker"
+  [runners.docker]
+    image = "alpine:latest"
+    privileged = true
