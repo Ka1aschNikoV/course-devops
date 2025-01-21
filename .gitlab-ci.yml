@@ -33,12 +33,13 @@ docker-build:
     #- docker ps -a
     
     # Remove all containers 
-    #- docker rm -f backend3-1
+    #- docker rm -f backend3-1c
     #- docker rm -f backend2-1
     #- docker rm -f backend1-1
     #- docker rm -f service2
     #- docker rm -f nginx_frontend
     #- docker rm -f redis
+    - apk add --no-cache docker-compose
     - docker compose up --build -d  # Use -d to run detached
 
 test-job:
