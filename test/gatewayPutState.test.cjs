@@ -11,7 +11,7 @@ const base64Auth = btoa(username + ':' + password);
 
 describe('Server Put State Tests', () => {
     afterEach(done => {
-        new Promise(resolve => setTimeout(resolve, 1000))
+        new Promise(resolve => setTimeout(resolve, 2500))
             .then(() => done()) // Call done() once the promise resolves
             .catch(err => done(err)); // Pass any errors to done()
     });
