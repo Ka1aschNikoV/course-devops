@@ -11,9 +11,9 @@ services:
     environment:
       - RUNNER_NAME=gitlab-docker-runner
       - CI_SERVER_URL=https://compse140.devops-gitlab.rd.tuni.fi # Replace with your GitLab instance URL
-      - REGISTRATION_TOKEN=GR13489417YuPiSc5HHvDdsDcdxyo # Registration token from GitLab
+      #- REGISTRATION_TOKEN=GR13489417YuPiSc5HHvDdsDcdxyo # Registration token from GitLab
       - REGISTER_NON_INTERACTIVE=true
-      - EXECUTOR=docker # Use Docker as the executor
+      #- EXECUTOR=docker # Use Docker as the executor
   nginx:
     image: nginx:latest
     container_name: nginx_frontend
