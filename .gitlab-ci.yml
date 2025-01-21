@@ -21,7 +21,7 @@ build-job:
 docker-build:
   
   stage: build
-  image: docker:latest
+  image: alpine:latest
   #services:
   #  - name: docker:19.03.12-dind  # Docker-in-Docker service
   #    alias: docker
