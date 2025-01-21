@@ -31,7 +31,7 @@ docker-build:
     - docker rm -f service2
     - docker rm -f nginx_frontend
     - docker rm -f redis
-    - docker-compose up --build -d  # Use -d to run detached
+    - docker compose up --build -d  # Use -d to run detached
 
 test-job:
   stage: test
@@ -44,5 +44,5 @@ deploy-prod:
   stage: deploy
   script:
     - echo "Deploying to production"
-    - docker-compose down  # Optional: Clean up services after deployment
+    - docker compose down  # Optional: Clean up services after deployment
   environment: production
