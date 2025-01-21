@@ -25,6 +25,7 @@ docker-build:
   services:
     - name: docker:19.03.12-dind  # Docker-in-Docker service
       alias: docker
+      privileged: true
   variables:
     DOCKER_HOST: tcp://docker:2375  # Configure Docker CLI to use Docker-in-Docker
     DOCKER_DRIVER: overlay2
