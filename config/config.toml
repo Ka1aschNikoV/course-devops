@@ -7,7 +7,7 @@ shutdown_timeout = 0
   session_timeout = 1800
 
 [[runners]]
-  name = "devops"
+  name = "gitlab-runner"
   url = "https://compse140.devops-gitlab.rd.tuni.fi"
   id = 237
   token = "glrt-t3_jxoCs86_DyknxZynrSWN"
