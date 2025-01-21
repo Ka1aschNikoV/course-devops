@@ -12,8 +12,7 @@ eslint-job:
     - npm install
     - npm run lint
   only:
-    - merge_requests
-    - main
+    - project
 build-job:
   stage: build
   script:
@@ -31,7 +30,7 @@ docker-build:
     - docker rm -f backend1-1
     - docker rm -f service2
     - docker rm -f nginx_frontend
-    - docker rm -f api_gateway
+    - docker rm -f redis
     - docker-compose up --build -d  # Use -d to run detached
 
 test-job:
