@@ -105,7 +105,7 @@ services:
   
 
   redis:
-    image: redis
+    image: redis:latest
     container_name: redis
     networks:
       - frontend_network
