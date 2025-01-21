@@ -23,9 +23,14 @@ const redis = new Redis({
   port: 6379,
 });
 
-// Middleware to block operations if the system is paused
+// Middleware to block operations if the system is paused or offline
 app.use(async (req, res, next) => {
-  
+
+  // If service is marked as down, bounce the request
+  if (downtimeFlag) {
+    res.status(503).send('Service Unavailable (Server is down for 2 seconds)');
+    res.end()
+  }
   const currState = await getSystemState()
   if (currState === "PAUSED" && !(req.path === '/state' && req.method === 'PUT')) {
     res.status(503).send('System is currently paused. Please try again later.');
@@ -35,6 +40,16 @@ app.use(async (req, res, next) => {
   }
   else {
     next();
+    if (!downtimeFlag) {
+      downtimeFlag = true;
+      console.log('Server is going down for 2 seconds after the response.');
+
+      // Introduce a 2-second delay before the next request can be processed
+      setTimeout(() => {
+          downtimeFlag = false;  // Allow the server to handle requests again
+          console.log('Server is back online.');
+      }, 2000);  // Delay of 2 seconds
+    }
   }
 });
 
@@ -68,8 +83,6 @@ app.post('/shutdown', async (req, res) => {
 app.put('/state', async (req, res)  => {
 
   let currState = await getSystemState()
-  console.log(currState)
-  console.log(req.headers)
   if (currState === "INIT" && !req.headers['x-authenticated-user']) {
     res.status(403).send("Please login before use!");
   }
@@ -85,13 +98,10 @@ app.put('/state', async (req, res)  => {
     }
     
     await changeState(state)
-    
-    
-    
   
     // Handle system behavior based on the new state
   
-    res.status(200).send(`State updated to ${state}.`);
+    res.status(200).send(state);
     if(state === 'SHUTDOWN') {
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop')
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop')
@@ -139,13 +149,6 @@ app.get('/run-log', (req, res) => {
 * Request info from services
 */
 app.get('/api', async (req,res) => {
-  console.log("service1")
-
-  // If service is marked as down, bounce the request
-  if (downtimeFlag) {
-    res.status(503).send('Service Unavailable (Server is down for 2 seconds)');
-    res.end()
-  }
   //Call service2
   try  {
     const response = await fetch("http://service2:8200/")
@@ -176,16 +179,7 @@ app.get('/api', async (req,res) => {
         res.setHeader('Content-Type', 'text/plain');
         res.send(plainTextResponse);
     res.end()
-    if (!downtimeFlag) {
-      downtimeFlag = true;
-      console.log('Server is going down for 2 seconds after the response.');
-
-      // Introduce a 2-second delay before the next request can be processed
-      setTimeout(() => {
-          downtimeFlag = false;  // Allow the server to handle requests again
-          console.log('Server is back online.');
-      }, 2000);  // Delay of 2 seconds
-    }
+    
     
     
   }
@@ -219,7 +213,6 @@ async function setSystemState(state) {
 async function getSystemState() {
   try {
     const state = await redis.get('system_state');
-    console.log('Current system state:', state); // Logs the current state from Redis
     return state;  // Returns the state retrieved from Redis
   } catch (err) {
     console.error('Error getting system state:', err);
@@ -231,7 +224,7 @@ async function getSystemState() {
 async function trackSeenUser(user) {
   try {
     // Add user to Redis Set
-    const isNewUser = await redis.sAdd('seen_users', user); // sAdd returns 1 if the user is new, 0 if already exists
+    const isNewUser = await redis.set('seen_users', user); // sAdd returns 1 if the user is new, 0 if already exists
 
     if (isNewUser) {
       console.log(`New user added to seen users: ${user}`);
@@ -239,9 +232,6 @@ async function trackSeenUser(user) {
       console.log(`User ${user} has already been tracked.`);
     }
 
-    // Optional: Retrieve and log all seen users (useful for debugging)
-    const seenUsers = await redis.sMembers('seen_users');
-    console.log('Current seen users:', seenUsers);
   } catch (err) {
     console.error('Error tracking user:', err);
   }
@@ -251,7 +241,7 @@ async function trackSeenUser(user) {
 async function getSeenUsers() {
   try {
     // Retrieve all seen users
-    const seenUsers = await redis.sMembers('seen_users');
+    const seenUsers = await redis.get('seen_users');
     return seenUsers;
   } catch (err) {
     console.error('Error fetching seen users:', err);
@@ -274,8 +264,9 @@ async function sh(cmd) {
       });
     });
 }
-
-
+const yes = () => {
+  console.log("bruh")
+}
 // Add new activity into log file
 async function logStateChange(oldState, newState) {
 
@@ -292,8 +283,10 @@ async function logStateChange(oldState, newState) {
 }
 
 // Monitor user logins
-async function monitorLogs(logFile) {
-  // Monitor the file for changes with fs.watchFile
+function monitorLogs(logFile) {
+  // Unwatch previous listeners to avoid a mess
+
+  // Monitor the file for changes with fs.watchFilec
   fs.watchFile(logFile, (curr, prev) => {
     if (curr.size > prev.size) {
       // New lines have been added, read the new data
@@ -305,10 +298,15 @@ async function monitorLogs(logFile) {
           if (match) {
             const { ip, user, time } = match.groups;
             const seenUsers = await getSeenUsers()
-            if (!seenUsers.has(user) && user !== "-") {
+            //console.log(match)
+            //console.log(seenUsers)
+            if(seenUsers === null && user!=="-") {
               await changeState("RUNNING");
-              console.log(`First login detected: User=${user}, IP=${ip}, Time=${time}`);
+              //console.log(`First login detected: User=${user}, IP=${ip}, Time=${time}`);
               trackSeenUser(user)
+              //console.log("FUCK YEAH")
+              const seenUsers2 = await getSeenUsers()
+              //console.log(seenUsers2)
             }
           }
         });
@@ -330,7 +328,7 @@ async function resetSystem() {
   }
   try {
     fs.writeFileSync(AUTH_LOG_FILE, '', { flag: 'w' }); 
-    fs.writeFileSync(RUN_FILE_PATH, '', { flag: 'w' });
+    //fs.writeFileSync(RUN_FILE_PATH, '', { flag: 'w' });
     console.log("Successfully cleared logs")
   }
   catch (err) {
@@ -356,7 +354,7 @@ app.listen(port, async () => {
 
   fs.writeFileSync(AUTH_LOG_FILE, '', { flag: 'w' }); 
   fs.writeFileSync(RUN_FILE_PATH, '', { flag: 'w' }); 
-  await monitorLogs(AUTH_LOG_FILE);
+  monitorLogs(AUTH_LOG_FILE);
   await changeState("INIT");
   console.log(`Listening on port ${port}!`);
 

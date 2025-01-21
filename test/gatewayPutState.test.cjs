@@ -11,7 +11,7 @@ const base64Auth = btoa(username + ':' + password);
 
 describe('Server Put State Tests', () => {
     afterEach(done => {
-        new Promise(resolve => setTimeout(resolve, 2000))
+        new Promise(resolve => setTimeout(resolve, 1000))
             .then(() => done()) // Call done() once the promise resolves
             .catch(err => done(err)); // Pass any errors to done()
     });
@@ -44,12 +44,13 @@ describe('Server Put State Tests', () => {
         expect(response.status).to.equal(200, 'Expected status code 200');
     });
 
-    it('should return 200 status code for /state', async () => {
+    it('should return 200 status code for /state and state is RUNNING', async () => {
         const response = await axios.get(SERVER_URL, {
 
         })
         
         expect(response.status).to.equal(200, 'Expected status code 200');
+        expect(response.data).to.equal('RUNNING', 'Expected server to be in RUNNING state automatically')
     });
 
     it('should have Content-Type text/plain', async () => {
@@ -123,7 +124,7 @@ describe('Server Put State Tests', () => {
         expect(response.status).to.equal(200, 'Expected server to be inoperable when paused');
     });
 
-    it('should be resetted when RUNNING -> INIT'), async () => {
+    it('should be resetted when RUNNING -> INIT', async () => {
         const response = await axios.put(SERVER_URL, 'INIT',{
             headers: {
                 'Content-Type': 'text/plain',
@@ -132,12 +133,12 @@ describe('Server Put State Tests', () => {
             },
         })
         const state = response.data;  // Extract the data from the response
-        expect(state).to.equal('INIT', 'Expected server to be in RUNNING state');
+        expect(state).to.equal('INIT', 'Expected server to be in INIT state');
 
         const responseLogs = await axios.get("http://localhost:8197/run-log")
-        expect(responseLogs.data).to.equal("", "Expected logs to be wiped")
+        expect(responseLogs.data).to.not.equal("", "Expected logs to not be wiped")
 
-    }
+    });
 
     it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
         const response = await axios.put(SERVER_URL, 'SHUTDOWN',{
