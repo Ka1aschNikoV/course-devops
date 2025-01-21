@@ -22,12 +22,12 @@ docker-build:
   
   stage: build
   image: docker:latest
-  services:
-    - name: docker:19.03.12-dind  # Docker-in-Docker service
-      alias: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2375  # Configure Docker CLI to use Docker-in-Docker
-    DOCKER_DRIVER: overlay2
+  #services:
+  #  - name: docker:19.03.12-dind  # Docker-in-Docker service
+  #    alias: docker
+  #variables:
+  #  DOCKER_HOST: tcp://docker:2375  # Configure Docker CLI to use Docker-in-Docker
+  #  DOCKER_DRIVER: overlay2
   script:
     - echo "Building and starting services with Docker Compose"
     - docker ps -a
