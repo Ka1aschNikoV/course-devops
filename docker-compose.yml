@@ -24,7 +24,7 @@ services:
       - frontend_network
 
   backend1:
-    image: service1:latest
+    #image: service1:latest
     container_name: backend1-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
@@ -48,7 +48,7 @@ services:
       REDIS_HOST: redis
 
   backend2:
-    image: service1:latest
+    #image: service1:latest
     container_name: backend2-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
@@ -70,7 +70,7 @@ services:
       REDIS_HOST: redis
 
   backend3:
-    image: service1:latest
+    #image: service1:latest
     container_name: backend3-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
@@ -92,7 +92,7 @@ services:
       REDIS_HOST: redis
 
   service2:
-    image: service2:latest
+    #image: service2:latest
     command: sh -c "mvn package && java -cp target/service2-1.0-SNAPSHOT.jar service2.App"
     container_name: service2
     build:
