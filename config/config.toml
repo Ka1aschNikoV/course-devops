@@ -14,6 +14,8 @@ shutdown_timeout = 0
   token_obtained_at = 0001-01-01T00:00:00Z
   token_expires_at = 0001-01-01T00:00:00Z
   executor = "docker"
+  shell = "bash"
+  pre_build_script = "source ~/.bashrc"
   [runners.docker]
     tls_verify = false
     image = "alpine:latest"
