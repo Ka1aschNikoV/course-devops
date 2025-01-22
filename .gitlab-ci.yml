@@ -34,16 +34,28 @@ build-job:
   script:
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
     - docker network ls
+    - docker-compose down # Start the cluster
   only:
     - project 
+  artifacts:
+    paths:
+      - docker-compose.yml  # Save the docker-compose file or any other artifacts
+    expire_in: 1 hour  # Make artifacts available for an hour or longer
 
 
 test-job:
   stage: test
   image: node:latest
+  services:
+    - docker:24.0.2-dind   # Docker-in-Docker service to run docker-compose in the test job
+  dependencies: 
+    - build
+  before_script:
+    - docker-compose -f ${COMPOSE_FILE} up -d  # Start the containers
   script:
     - npm install
     - npm test
+    - docker-compose down
   only:
     - project
 
