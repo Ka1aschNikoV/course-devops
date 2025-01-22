@@ -7,11 +7,13 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "npx mocha --timeout 5000"
+    "test": "npx mocha --timeout 5000",
+    "start": "node index.js"
   },
   "dependencies": {
     "axios": "^1.7.9",
     "chai": "^5.1.2",
-    "child_process": "^1.0.2"
+    "child_process": "^1.0.2",
+    "express": "^4.21.2"
   }
 }
