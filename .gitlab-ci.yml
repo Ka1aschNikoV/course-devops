@@ -31,11 +31,12 @@ test-job:
     DOCKER_DRIVER: overlay2
   before_script:
     - apk add --no-cache docker-compose
+    - apk add --no-cache npm
     #- sleep 10
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
   script:
     - ls
-    - cd tests
+    #- cd test
     - npm install
     - npm test
     #- docker-compose -f ${COMPOSE_FILE} exec course-devops npm install
