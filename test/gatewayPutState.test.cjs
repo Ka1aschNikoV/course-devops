@@ -3,7 +3,7 @@ const axios = require('axios');
 const expect = chai.expect;
 const { execSync } = require('child_process');
 
-const SERVER_URL = 'http://nginx:8197/state';  // Keep the /state endpoint
+const SERVER_URL = 'http://z:8197/state';  // Keep the /state endpoint
 
 const username = 'user1';
 const password = 'your_mom';
@@ -34,7 +34,7 @@ describe('Server Put State Tests', () => {
         
     });
     it('should respond if user is logged in', async () => {
-        const response = await axios.get("http://nginx:8198/controlpanel.html", {
+        const response = await axios.get("http://localhost:8198/controlpanel.html", {
             auth: {
                 username: 'user1',
                 password: 'your_mom',
@@ -135,7 +135,7 @@ describe('Server Put State Tests', () => {
         const state = response.data;  // Extract the data from the response
         expect(state).to.equal('INIT', 'Expected server to be in INIT state');
 
-        const responseLogs = await axios.get("http://nginx_frontend:8197/run-log")
+        const responseLogs = await axios.get("http://localhost:8197/run-log")
         expect(responseLogs.data).to.not.equal("", "Expected logs to not be wiped")
 
     });

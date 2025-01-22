@@ -5,7 +5,7 @@ stages:
   - deploy
 
 variables:
-  COMPOSE_PROJECT_NAME: "ci-test-cluster"  # Isolates the test environment
+  COMPOSE_PROJECT_NAME: "course-devops"  # Isolates the test environment
   COMPOSE_FILE: "docker-compose.yml" # Use a separate compose file for testing
 
 eslint-job:
