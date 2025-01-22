@@ -1,0 +1,17 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha --timeout 5000"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "chai": "^5.1.2",
+    "child_process": "^1.0.2"
+  }
+}

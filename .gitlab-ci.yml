@@ -33,14 +33,9 @@ build-job:
     - apk add --no-cache docker-compose npm nodejs curl
   script:
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
-    - curl http://localhost:8197/state
-    - curl http://nginx:8197/state
-    - curl http://nginx_frontend:8197/state
-    - curl http://host.docker.internal:8197/state
+    - docker exec test npm test
     - docker network ls
     - docker ps
-    - npm install
-    - npm test
 
     - docker-compose down # Start the cluster
   only:

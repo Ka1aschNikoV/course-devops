@@ -1,5 +1,15 @@
 services:
   
+  test:
+    image: node:latest
+    container_name: test_container
+    command: sh -c "npm install"
+    build:
+      dockerfile: DockerTest
+      context: ./test/
+    
+    networks: 
+      - frontend_network
   nginx:
     image: nginx:latest
     container_name: nginx_frontend
@@ -14,9 +24,6 @@ services:
     # Test port
       - "8197:8197"
 
-    expose: 
-      - 8198
-      - 8197
     volumes:
       - nginx-logs:/var/log/nginx
     
