@@ -1,6 +1,6 @@
-(async () => {
-    const chai = await import('chai');
-    const axios = await import('axios');
+
+    import chai from 'chai';
+    import axios from 'axios';
     
     const { expect } = chai;
     
@@ -46,4 +46,3 @@
             expect(response.data).to.not.be.empty
         });
     });
-  })();

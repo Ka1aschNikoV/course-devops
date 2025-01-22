@@ -1,10 +1,11 @@
-(async () => {
-    const chai = await import('chai');
-    const axios = await import('axios');
-    
-    const { expect } = chai;
-    
-    // Your test logic here
+
+import chai from 'chai';
+import axios from 'axios';
+
+const { expect } = chai;
+ 
+  
+  // Your test logic here
     const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
 const username = 'user1';
@@ -154,7 +155,4 @@ describe('Server Put State Tests', () => {
     });
 
 });
-  })();
-const { execSync } = require('child_process');
-
 

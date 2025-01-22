@@ -1,8 +1,8 @@
-(async () => {
-    const chai = await import('chai');
-    const axios = await import('axios');
-    
-    const { expect } = chai;
+import chai from 'chai';
+import axios from 'axios';
+
+const { expect } = chai;
+
     
     // Your test logic here
     const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
@@ -60,6 +60,4 @@ describe.skip('Server State Tests', () => {
     
 
 });
-
-  })();
 
