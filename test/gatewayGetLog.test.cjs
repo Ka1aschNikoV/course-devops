@@ -2,7 +2,7 @@ const chai = require('chai');
 const axios = require('axios');
 const expect = chai.expect;
 
-const SERVER_URL = 'http://localhost:8197/run-log';  // Keep the /request endpoint
+const SERVER_URL = 'http://nginx:8197/run-log';  // Keep the /request endpoint
 
 const getAuthHeader = (username, password) => {
     const credentials = `${username}:${password}`;
