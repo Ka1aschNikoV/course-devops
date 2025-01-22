@@ -33,9 +33,11 @@ build-job:
     - apk add --no-cache docker-compose npm nodejs curl
   script:
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
-    - docker exec test_container npm test
+    
     - docker network ls
     - docker ps
+
+    - docker exec test_container npm test
 
     - docker-compose down # Start the cluster
   only:
