@@ -1,9 +1,6 @@
-
-    import chai from 'chai';
+import { expect } from 'chai';
     import axios from 'axios';
-    
-    const { expect } = chai;
-    
+       
     const SERVER_URL = 'http://localhost:8197/run-log';  // Keep the /request endpoint
 
     const getAuthHeader = (username, password) => {

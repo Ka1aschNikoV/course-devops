@@ -1,8 +1,6 @@
 
-import chai from 'chai';
-import axios from 'axios';
-
-const { expect } = chai;
+import { expect } from 'chai';
+    import axios from 'axios';
  
   
   // Your test logic here
