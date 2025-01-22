@@ -51,6 +51,7 @@ test-job:
   dependencies: 
     - build-job
   before_script:
+    - apk add --no-cache docker-compose
     - docker-compose -f ${COMPOSE_FILE} up -d  # Start the containers
   script:
     - npm install
