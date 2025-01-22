@@ -23,7 +23,6 @@ test-job:
   image: docker:24.0.2 # Docker-in-Docker support
   services:
     - docker:24.0.2-dind # Docker daemon in the CI runner
-    command: ["--tls=false"]
   variables:
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: ""
