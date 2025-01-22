@@ -5,9 +5,7 @@
     const { expect } = chai;
     
     // Your test logic here
-  })();
-
-const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
+    const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
 // Function to query the server state
 async function getServerState() {
@@ -62,3 +60,6 @@ describe.skip('Server State Tests', () => {
     
 
 });
+
+  })();
+

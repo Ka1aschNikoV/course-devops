@@ -5,9 +5,7 @@
     const { expect } = chai;
     
     // Your test logic here
-  })();
-
-const SERVER_URL = 'http://localhost:8197/request'; // Keep the /request endpoint
+    const SERVER_URL = 'http://localhost:8197/request'; // Keep the /request endpoint
 
 describe.skip('Request Response Tests', () => {
 
@@ -98,3 +96,7 @@ describe.skip('Request Response Tests', () => {
         expect(body).to.not.include('unknownField', 'Response should not include unknownField');
     });
 });
+
+
+  })();
+
