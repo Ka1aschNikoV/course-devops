@@ -15,5 +15,8 @@
     "chai": "^5.1.2",
     "child_process": "^1.0.2",
     "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "mocha": "^11.0.1"
   }
 }
