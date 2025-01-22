@@ -1,6 +1,6 @@
 FROM node:19
 
 # Establish workdir
-WORKDIR /usr/test
-COPY ./ /usr/test
+WORKDIR /usr/testing
+COPY ./ /usr/testing
 CMD ["npm", "test"]
