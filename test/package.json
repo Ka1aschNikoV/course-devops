@@ -1,22 +1,26 @@
 {
-  "name": "test",
+  "devDependencies": {
+    "chai": "5.1.2",
+    "mocha": "11.0.1"
+  },
+  "name": "course-devops",
+  "description": "### Implemented optional features ### **List of optional features implemented.**",
   "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
-  "author": "",
-  "type": "module",
   "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "test": "npx mocha --timeout 5000",
     "start": "node index.js"
   },
+  "author": "",
+  "license": "ISC",
+  "type": "module",
   "dependencies": {
     "axios": "^1.7.9",
-    "chai": "^5.1.2",
     "child_process": "^1.0.2",
-    "express": "^4.21.2"
-  },
-  "devDependencies": {
-    "mocha": "^11.0.1"
+    "chai": "^4.3.4",
+    "express":"4.21.2"
   }
 }

@@ -1,7 +1,7 @@
 services:
   
   test:
-    image: node:latest
+    image: test:latest
     container_name: test_container
     command: sh -c "npm install && npm start"
     build:
