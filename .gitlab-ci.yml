@@ -49,7 +49,7 @@ test-job:
   services:
     - docker:24.0.2-dind   # Docker-in-Docker service to run docker-compose in the test job
   dependencies: 
-    - build
+    - build-job
   before_script:
     - docker-compose -f ${COMPOSE_FILE} up -d  # Start the containers
   script:
