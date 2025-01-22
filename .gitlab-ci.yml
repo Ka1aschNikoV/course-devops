@@ -34,6 +34,7 @@ test-job:
     #- sleep 10
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
   script:
+    - ls
     - cd tests
     - npm install
     - npm test
