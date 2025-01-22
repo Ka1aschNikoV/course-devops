@@ -68,7 +68,7 @@ app.post('/shutdown', async (req, res) => {
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop');
-    sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/api_gateway/stop');
+    sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/test_container/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop');
   }, 2000);
 
@@ -108,7 +108,7 @@ app.put('/state', async (req, res)  => {
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop');
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop');
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/api_gateway/stop');
+      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/test_container/stop');
       sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop');
     }
   }
