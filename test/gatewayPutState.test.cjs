@@ -1,7 +1,13 @@
-const chai = require('chai');
-const axios = require('axios');
-const expect = chai.expect;
+(async () => {
+    const chai = await import('chai');
+    const axios = await import('axios');
+    
+    const { expect } = chai;
+    
+    // Your test logic here
+  })();
 const { execSync } = require('child_process');
+
 
 const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
