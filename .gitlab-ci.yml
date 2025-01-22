@@ -23,6 +23,7 @@ test-job:
   image: docker:24.0.2 # Docker-in-Docker support
   services:
     - docker:24.0.2-dind # Docker daemon in the CI runner
+    command: ["--tls=false"]
   variables:
     DOCKER_HOST: tcp://docker:2376
     DOCKER_TLS_CERTDIR: "/certs"
@@ -30,8 +31,6 @@ test-job:
   before_script:
     - apk add --no-cache docker-compose
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
-    - export DOCKER_CERT_PATH=/certs/client
-    - export DOCKER_TLS_VERIFY=1 # Enable TLS verificatio
   script:
     - docker-compose -f ${COMPOSE_FILE} ps # Check cluster status
     - docker-compose -f ${COMPOSE_FILE} exec app npm test # Run tests inside the app container
