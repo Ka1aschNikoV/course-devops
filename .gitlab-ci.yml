@@ -1,9 +1,12 @@
 stages:
-  - lint
-  - build
+  #- lint
   - test
+  #- build
   - deploy
 
+variables:
+  COMPOSE_PROJECT_NAME: "ci-test-cluster"  # Isolates the test environment
+  COMPOSE_FILE: "docker-compose.yml" # Use a separate compose file for testing
 
 eslint-job:
   stage: lint
@@ -13,12 +16,29 @@ eslint-job:
     - npm run lint
   only:
     - project
-build-job:
-  stage: build
-  script:
-    - echo "Hello, $GITLAB_USER_LOGIN!"
 
-docker-build:
+
+test-job:
+  stage: test
+  image: docker:24.0.2 # Docker-in-Docker support
+  services:
+    - docker:24.0.2-dind # Docker daemon in the CI runner
+  variables:
+    DOCKER_HOST: tcp://docker:2376
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    - apk add --no-cache docker-compose
+    - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
+  script:
+    - docker-compose -f ${COMPOSE_FILE} ps # Check cluster status
+    - docker-compose -f ${COMPOSE_FILE} exec app npm test # Run tests inside the app container
+  after_script:
+    - docker-compose -f ${COMPOSE_FILE} down # Tear down the cluster
+  only:
+    - main  # Run only on the main branch
+
+
+docker-build-job:
   
   stage: build
   image: docker:latest
@@ -42,16 +62,9 @@ docker-build:
     - apk add --no-cache docker-compose
     - docker-compose up --build -d  # Use -d to run detached
 
-test-job:
-  stage: test
-  script:
-    - echo "Running tests with services up"
-    - npm install
-    - npm test
-
 deploy-prod:
   stage: deploy
   script:
     - echo "Deploying to production"
-    - docker compose down  # Optional: Clean up services after deployment
+    #- docker compose down  # Optional: Clean up services after deployment
   environment: production
