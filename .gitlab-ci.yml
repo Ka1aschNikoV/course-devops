@@ -1,7 +1,7 @@
 stages:
   - lint
+  - build
   - test
-  #- build
   - deploy
 
 variables:
@@ -18,8 +18,8 @@ eslint-job:
     - project
 
 
-test-job:
-  stage: test
+build-job:
+  stage: build
   image: docker:24.0.2 # Docker-in-Docker support
   services:
     - name: docker:24.0.2-dind # Docker daemon in the CI runner
@@ -31,21 +31,22 @@ test-job:
     DOCKER_DRIVER: overlay2
   before_script:
     - apk add --no-cache docker-compose
-    - apk add --no-cache nodejs npm
-    #- sleep 10
-    - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
+    
   script:
-    - ls
-    #- cd test
-    - npm install
-    - npm test
-    #- docker-compose -f ${COMPOSE_FILE} exec course-devops npm install
-    #- docker-compose -f ${COMPOSE_FILE} exec course-devops npm test
-  after_script:
-    - docker-compose -f ${COMPOSE_FILE} down # Tear down the cluster
+    - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
+
   only:
     - project 
 
+
+test-job:
+  stage: test
+  image: node:latest
+  script:
+    - npm install
+    - npm test
+  only:
+    - project
 
 #docker-build-job:
   
