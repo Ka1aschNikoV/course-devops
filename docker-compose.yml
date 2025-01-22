@@ -3,7 +3,7 @@ services:
   test:
     image: node:latest
     container_name: test_container
-    command: sh -c "npm install"
+    command: sh -c "npm install && npm start"
     build:
       dockerfile: DockerTest
       context: ./test/
