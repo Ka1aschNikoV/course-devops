@@ -35,9 +35,8 @@ test-job:
     #- sleep 10
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
   script:
-    - docker-compose -f ${COMPOSE_FILE} ps # Check cluster status
-    - docker-compose -f ${COMPOSE_FILE} exec npm install
-    - docker-compose -f ${COMPOSE_FILE} exec npm test
+    - docker-compose -f ${COMPOSE_FILE} exec service1 npm install
+    - docker-compose -f ${COMPOSE_FILE} exec service1 npm test
   after_script:
     - docker-compose -f ${COMPOSE_FILE} down # Tear down the cluster
   only:
