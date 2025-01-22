@@ -4,3 +4,4 @@ service2/service2/target/
 .vscode
 builds/
 api/node_modules
+/node_modules
