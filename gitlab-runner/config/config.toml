@@ -17,7 +17,6 @@ shutdown_timeout = 0
   [runners.docker]
     tls_verify = false
     image = "docker:24.0.2"
-    services = ["docker:24.0.2-dind"]
     privileged = true
     disable_entrypoint_overwrite = false
     oom_kill_disable = false
