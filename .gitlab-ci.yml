@@ -38,8 +38,6 @@ build-job:
     - apk add docker-compose npm nodejs curl
   script:
     - docker compose -f ${COMPOSE_FILE} up -d # Start the cluster
-    - docker network connect test_network $(hostname) # Attach job container to the same network
-    - docker network connect frontend_network $(hostname) # Attach job container to the same network
     - docker network ls
     - docker ps
 
