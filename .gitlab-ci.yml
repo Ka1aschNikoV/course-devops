@@ -46,7 +46,7 @@ build-job:
     - npm install
 
   script:
-    - docker compose up --build -d  #Start the cluster
+    - docker compose up -d  #Start the cluster
     - curl http://localhost:8197/state
     #- docker network connect gitlab-runner_default nginx_frontend
     #- docker network connect test_network gitlab-runner
