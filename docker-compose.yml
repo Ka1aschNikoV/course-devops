@@ -8,8 +8,8 @@ services:
       dockerfile: DockerTest
       context: ./test/
     
-    #networks: 
-     # - test_network
+    networks: 
+      - test_network
   nginx:
     image: nginx:latest
     container_name: nginx_frontend
@@ -34,7 +34,7 @@ services:
       - backend2
       - backend3
     networks:
-      #- test_network
+      - test_network
       - frontend_network
 
   backend1:
@@ -131,8 +131,8 @@ networks:
   # Connection between Nginx front and load balanced servers
   frontend_network:
     driver: bridge
-  #test_network:
-   # driver: bridge
+  test_network:
+    driver: bridge
 volumes:
   nginx-logs:
   run-logs:
