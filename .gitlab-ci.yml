@@ -40,13 +40,13 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apk add nodejs npm docker-compose curl
+    - apk add nodejs npm docker dockerd curl
     - dockerd &
     - docker info
     - npm install
 
   script:
-    - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
+    - docker compose up --build -d# Start the cluster
     - curl http://localhost:8197/state
     #- docker network connect gitlab-runner_default nginx_frontend
     #- docker network connect test_network gitlab-runner
