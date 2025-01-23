@@ -2,9 +2,10 @@ services:
   
 
   gitlab-runner:
-    image: gitlab/gitlab-runner:latest # Official GitLab Runner image
-    container_name: gitlab_runner
+    image: gitlab/gitlab-runner:alpine # Official GitLab Runner image
+    container_name: gitlab-runner
     restart: always # Automatically restart if the container stops
+    network_mode: 'host'
     volumes:
       - ./config:/etc/gitlab-runner # Store GitLab Runner configuration persistently
       - /var/run/docker.sock:/var/run/docker.sock # Enable Docker-in-Docker for building images
