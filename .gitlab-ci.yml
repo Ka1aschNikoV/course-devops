@@ -25,16 +25,18 @@ build-job:
   stage: build
   image: docker:latest # Docker-in-Docker support
   #image: node:alpine
-  #services:
-  #  - name: docker:24.0.2-dind # Docker daemon in the CI runner
-  #    alias: dockerdind
-  #    command: ["--experimental", "--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock"]
-  #variables:
-   # DOCKER_HOST: tcp://dockerdind:2375/
+  services:
+  
+    - name: docker:24.0.2-dind # Docker daemon in the CI runner
+  
+      alias: dockerdind
+      command: ["--experimental", "--host=tcp://0.0.0.0:2375", "--host=unix:///var/run/docker.sock"]
+  variables:
+    DOCKER_HOST: tcp://dockerdind:2375/
   # DOCKER_CACHE_DIR: /cache/docker
-  #  DOCKER_TLS_CERTDIR: ""
-    #DOCKER_OPTS: --dns 0.0.0.0
-  #  DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_OPTS: --dns 0.0.0.0
+    DOCKER_DRIVER: overlay2
   #cache:
   #  key: "$CI_JOB_NAME-docker-cache"
   #  paths:
