@@ -35,14 +35,16 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apk add docker-compose npm nodejs
+    - apk add docker-compose npm nodejs curl
   script:
     - docker compose -f ${COMPOSE_FILE} up -d # Start the cluster
+    - docker network connect test_network $(hostname) # Attach job container to the same network
+    - docker network connect frontend_network $(hostname) # Attach job container to the same network
     - docker network ls
     - docker ps
 
     - docker exec test_container npm test
-
+    - curl http://nginx:8197/state
     - docker compose down # Start the cluster
   only:
     - project 
