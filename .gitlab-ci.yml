@@ -12,7 +12,8 @@ eslint-job:
   stage: lint
   image: node:latest
   before_script: 
-    - apk install npm nodejs
+    - sleep 10
+    - apk add npm nodejs
     - npm install
   script:
     
