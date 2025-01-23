@@ -44,7 +44,7 @@ build-job:
 
   script:
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
-    - curl http://nginx:8197/state
+    #- curl http://nginx:8197/state
     - docker network connect test_network nginx
     - docker network connect test_network gitlab-runner
     - docker network ls
