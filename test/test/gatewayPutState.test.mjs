@@ -4,7 +4,7 @@ import { expect } from 'chai';
  
   
   // Your test logic here
-    const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
+    const SERVER_URL = 'http://nginx:8197/state';  // Keep the /state endpoint
 
 const username = 'user1';
 const password = 'your_mom';
@@ -35,7 +35,7 @@ describe('Server Put State Tests', () => {
         
     });
     it('should respond if user is logged in', async () => {
-        const response = await axios.get("http://nginx_frontend:8198/controlpanel.html", {
+        const response = await axios.get("http://nginx:8198/controlpanel.html", {
             auth: {
                 username: 'user1',
                 password: 'your_mom',
