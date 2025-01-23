@@ -1,6 +1,5 @@
 services:
   
-
   gitlab-runner:
     image: gitlab/gitlab-runner:latest # Official GitLab Runner image
     container_name: gitlab-runner
@@ -15,4 +14,5 @@ services:
       - USER=gitlab-runner
       - CI_SERVER_URL=https://compse140.devops-gitlab.rd.tuni.fi # Replace with your GitLab instance URL
       - REGISTER_NON_INTERACTIVE=true
-      - HOME=/home/gitlab-runner 
+      - HOME=/home/gitlab-runner
+      - PRIVILEGED=true 

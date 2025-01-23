@@ -13,7 +13,7 @@ eslint-job:
   image: node:latest
   before_script: 
     - sleep 10
-    - apk add npm nodejs
+    - apt install npm nodejs
     - npm install
   script:
     
