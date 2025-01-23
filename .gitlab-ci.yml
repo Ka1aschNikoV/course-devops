@@ -25,7 +25,7 @@ build-job:
   stage: build
   image: docker:latest # Docker-in-Docker support
   services:
-    - name: docker:24.0.2-dind # Docker daemon in the CI runner
+    - name: docker:latest-dind # Docker daemon in the CI runner
       alias: dockerdind
   variables:
     DOCKER_HOST: tcp://dockerdind:2375/
@@ -38,9 +38,7 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apk add nodejs npm curl docker-compose
-    - dockerd &
-    - docker info
+    - apk add nodejs npm curl docker-compose docker
     - npm install
 
   script:
