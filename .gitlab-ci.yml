@@ -12,8 +12,7 @@ eslint-job:
   stage: lint
   image: node:latest
   before_script: 
-    - apt-get update
-    - apt-get install -y npm nodejs
+
     - npm install
   script:
     
