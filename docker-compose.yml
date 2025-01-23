@@ -10,6 +10,7 @@ services:
     
     networks: 
       - test_network
+      - gitlab-runner_default
   nginx:
     image: nginx:latest
     container_name: nginx_frontend
@@ -36,6 +37,7 @@ services:
     networks:
       - test_network
       - frontend_network
+      - gitlab-runner_default
 
   backend1:
     #image: service1:latest
@@ -58,6 +60,7 @@ services:
     networks:
       - frontend_network
       - backend
+      - gitlab-runner_default
     environment:
       REDIS_HOST: redis
 
@@ -80,6 +83,7 @@ services:
     networks:
       - frontend_network
       - backend
+      - gitlab-runner_default
     environment:
       REDIS_HOST: redis
 
@@ -102,6 +106,7 @@ services:
     networks:
       - frontend_network
       - backend
+      - gitlab-runner_default
     environment:
       REDIS_HOST: redis
 
@@ -123,6 +128,7 @@ services:
     container_name: redis
     networks:
       - frontend_network
+      - gitlab-runner_default
 
 networks:
   # Connection between load balanced servers and service2
@@ -132,6 +138,8 @@ networks:
   frontend_network:
     driver: bridge
   test_network:
+    driver: bridge
+  gitlab-runner_default:
     driver: bridge
 volumes:
   nginx-logs:
