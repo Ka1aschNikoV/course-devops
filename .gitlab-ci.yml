@@ -23,8 +23,8 @@ variables:
 
 build-job:
   stage: build
-  #image: docker:latest # Docker-in-Docker support
-  image: node:alpine
+  image: docker:latest # Docker-in-Docker support
+  #image: node:alpine
   #services:
   #  - name: docker:24.0.2-dind # Docker daemon in the CI runner
   #    alias: dockerdind
@@ -40,7 +40,7 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apk add nodejs npm docker docker-compose curl
+    - apk add nodejs npm curl docker-compose
     - dockerd &
     - docker info
     - npm install
