@@ -136,7 +136,7 @@ describe('Server Put State Tests', () => {
         const state = response.data;  // Extract the data from the response
         expect(state).to.equal('INIT', 'Expected server to be in INIT state');
 
-        const responseLogs = await axios.get("http://nginx_frontend:8197/run-log")
+        const responseLogs = await axios.get("http://nginx:8197/run-log")
         expect(responseLogs.data).to.not.equal("", "Expected logs to not be wiped")
 
     });

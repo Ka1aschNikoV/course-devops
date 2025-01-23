@@ -23,9 +23,9 @@ services:
       - "8198:8198"
     # Test port
       - "8197:8197"
-    #expose: 
-    #  - 8197
-    #  - 8198
+    expose: 
+      - 8197
+      - 8198
     volumes:
       - nginx-logs:/var/log/nginx
     
