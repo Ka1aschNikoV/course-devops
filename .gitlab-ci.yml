@@ -23,7 +23,7 @@ eslint-job:
 
 build-job:
   stage: build
-  image: node:latest # Docker-in-Docker support
+  image: alpine:latest # Docker-in-Docker support
   #services:
   #  - name: docker:24.0.2-dind # Docker daemon in the CI runner
   #    alias: dockerdind
@@ -38,8 +38,9 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apt-get install -y npm nodejs curl
+    - apk add nodejs npm docker-compose curl
     - npm install
+
   script:
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
     - docker network ls
