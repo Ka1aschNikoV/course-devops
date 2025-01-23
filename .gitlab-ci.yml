@@ -25,12 +25,12 @@ build-job:
   stage: build
   image: docker:latest # Docker-in-Docker support
   services:
-    - name: docker:latest-dind # Docker daemon in the CI runner
+    - name: docker:24.0.2-dind # Docker daemon in the CI runner
       alias: dockerdind
   variables:
     DOCKER_HOST: tcp://dockerdind:2375/
   # DOCKER_CACHE_DIR: /cache/docker
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_CERTDIR: ""
     #DOCKER_OPTS: --dns 8.8.8.8
     DOCKER_DRIVER: overlay2
   #cache:
