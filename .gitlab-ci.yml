@@ -36,14 +36,15 @@ build-job:
   #    - $DOCKER_CACHE_DIR
   before_script:
     - apk add docker-compose npm nodejs curl
+    - npm install
   script:
-    - docker compose -f ${COMPOSE_FILE} up -d # Start the cluster
+    - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
     - docker network ls
     - docker ps
 
-    - docker exec test_container npm test
-    - curl http://nginx:8197/state
-    - docker compose down # Start the cluster
+    - npm test
+    - curl http://localhost:8197/state
+    - docker-compose down # Start the cluster
   only:
     - project 
   artifacts:
