@@ -30,7 +30,7 @@ build-job:
   variables:
     DOCKER_HOST: tcp://dockerdind:2375/
   # DOCKER_CACHE_DIR: /cache/docker
-    DOCKER_TLS_CERTDIR: "/certs"
+    DOCKER_TLS_CERTDIR: ""
     #DOCKER_OPTS: --dns 0.0.0.0
   #  DOCKER_DRIVER: overlay2
   #cache:
