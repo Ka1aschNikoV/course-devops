@@ -11,8 +11,11 @@ variables:
 eslint-job:
   stage: lint
   image: node:latest
-  script:
+  before_script: 
+    - apk install npm nodejs
     - npm install
+  script:
+    
     - npm run lint
   only:
     - project
