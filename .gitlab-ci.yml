@@ -47,7 +47,7 @@ build-job:
     - docker ps
 
     - docker exec test_container npm test
-    - curl http://localhost:8197/state
+    - curl http://nginx:8197/state
     - docker-compose down # Start the cluster
   only:
     - project 
