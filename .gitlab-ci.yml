@@ -13,7 +13,7 @@ eslint-job:
   image: node:latest
   before_script: 
     - sleep 10
-    - apt install npm nodejs
+    - apt get install -y npm nodejs
     - npm install
   script:
     
@@ -39,7 +39,7 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apk add docker-compose npm nodejs curl
+    - apt get install -y npm nodejs curl
     - npm install
   script:
     - docker-compose -f ${COMPOSE_FILE} up -d # Start the cluster
