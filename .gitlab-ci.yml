@@ -41,6 +41,7 @@ build-job:
   #    - $DOCKER_CACHE_DIR
   before_script:
     - apk add nodejs npm docker-compose curl
+    - service docker start
     - npm install
 
   script:
