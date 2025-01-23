@@ -1,5 +1,5 @@
 stages:
-  #- lint
+  - lint
   - build
   - test
   - deploy
@@ -7,18 +7,17 @@ stages:
 variables:
   COMPOSE_PROJECT_NAME: "course-devops"  # Isolates the test environment
   COMPOSE_FILE: "docker-compose.yml" # Use a separate compose file for testing
+  SSH_KNOWN_HOSTS: "86.50.231.95"
   
-#eslint-job:
-#  stage: lint
- # image: node:latest
- # before_script: 
-
- #   - npm install
- # script:
-    
- #   - npm run lint
- # only:
-  #  - project
+eslint-job:
+  stage: lint
+  image: node:latest
+  before_script:
+    - npm install
+  script:
+    - npm run lint
+  only:
+    - project
 
 
 build-job:
@@ -29,86 +28,60 @@ build-job:
       alias: dockerdind
   variables:
     DOCKER_HOST: tcp://dockerdind:2375/
-  # DOCKER_CACHE_DIR: /cache/docker
+
     DOCKER_TLS_CERTDIR: ""
-    #DOCKER_OPTS: --dns 8.8.8.8
+
     DOCKER_DRIVER: overlay2
-  #cache:
-  #  key: "$CI_JOB_NAME-docker-cache"
-  #  paths:
-  #    - $DOCKER_CACHE_DIR
+
   before_script:
-    - apk add nodejs npm curl docker-compose docker
-    - npm install
+    - apk add docker-compose docker
 
   script:
-
-    - docker-compose up --build -d  #Start the cluster
-
-    #curl http://localhost:8197/state
-    #- docker network connect gitlab-runner_default nginx_frontend
-    #- docker network connect test_network gitlab-runner
-    #- docker network ls
-    #- docker ps
-    #- npm test
-    - sleep 10
-    - docker exec test_container npm test
-  
-    #- curl http://nginx:8197/state
-    - docker-compose down # Start the cluster
+    - docker-compose build --no-cache  #Start the cluster
   only:
     - project 
   artifacts:
     paths:
-      - docker-compose.yml  # Save the docker-compose file or any other artifacts
-    expire_in: 1 hour  # Make artifacts available for an hour or longer
+      - builds/*  # Specify the files/folders that should be treated as artifacts
 
 
 test-job:
   stage: test
-  image: node:latest
+  image: docker:latest # Docker-in-Docker support
   services:
-    - docker:24.0.2-dind   # Docker-in-Docker service to run docker-compose in the test job
-  dependencies: 
-    - build-job
+    - name: docker:24.0.2-dind # Docker daemon in the CI runner
+      alias: dockerdind
+  variables:
+    DOCKER_HOST: tcp://dockerdind:2375/
+
+    DOCKER_TLS_CERTDIR: ""
+
+    DOCKER_DRIVER: overlay2
+
   before_script:
-    - apk add --no-cache docker-compose
-    - docker-compose -f ${COMPOSE_FILE} up -d  # Start the containersc
-    - export DOCKER_HOST=tcp://dockerdind:2375
-  script:
+    - apk add docker-compose docker npm nodejs
     - npm install
-    - npm test
-    - docker-compose down
+
+  script:
+    - docker-compose up -d #Start the cluster
+    - sleep 10
+    - docker exec test_container npm test
+    - docker-compose down # Stop
+  only:
+    - project 
+
+deploy-server:
+  stage: deploy
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+  script:
+    - ssh ubuntu@86.50.231.95 "mkdir -p ~/devopper"
+    - scp -r ./builds/* ubuntu@86.50.231.95:~/devopper
+    - ssh ubuntu@86.50.231.95 "docker-compose --build"
+    - ssh ubuntu@86.50.231.95 "docker-compose up -d"
   only:
     - project
-
-#docker-build-job:
-  
-#  stage: build
-#  image: docker:latest
-#  services:
-#    - name: docker:19.03.12-dind  # Docker-in-Docker service
-#      alias: docker
-#  variables:
-#    DOCKER_HOST: tcp://docker:2375  # Configure Docker CLI to use Docker-in-Docker
-#    DOCKER_DRIVER: overlay2
-#  script:
-#    - echo "Building and starting services with Docker Compose"
-    #- docker ps -a
-    
-    # Remove all containers 
-    #- docker rm -f backend3-1c
-    #- docker rm -f backend2-1
-    #- docker rm -f backend1-1
-    #- docker rm -f service2
-    #- docker rm -f nginx_frontend
-    #- docker rm -f redis
-#    - apk add --no-cache docker-compose
-#    - docker-compose up --build -d  # Use -d to run detached
-
-deploy-prod:
-  stage: deploy
-  script:
-    - echo "Deploying to production"
-    #- docker compose down  # Optional: Clean up services after deployment
-  environment: production
