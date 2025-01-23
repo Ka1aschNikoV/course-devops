@@ -40,7 +40,7 @@ build-job:
   #  paths:
   #    - $DOCKER_CACHE_DIR
   before_script:
-    - apk add nodejs npm docker dockerd curl
+    - apk add nodejs npm docker curl
     - dockerd &
     - docker info
     - npm install
