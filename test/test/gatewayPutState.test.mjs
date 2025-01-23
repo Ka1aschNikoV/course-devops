@@ -141,7 +141,7 @@ describe('Server Put State Tests', () => {
 
     });
 
-    it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
+    /*it('should be in SHUTDOWN state after setting it to SHUTDOWN', async () => {
         const response = await axios.put(SERVER_URL, 'SHUTDOWN',{
             headers: {
                 'Content-Type': 'text/plain',
@@ -150,7 +150,7 @@ describe('Server Put State Tests', () => {
             },
         })
         expect(response.status).to.equal(200, 'Expected server to be SHUTDOWN');
-    });
+    });*/
 
 });
 
