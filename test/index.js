@@ -1,8 +1,8 @@
 import express from "express"
 const app = express();
-const port = 8196;
+const port = 8194;
 
-app.listen(8196, async () => {
+app.listen(8194, async () => {
     console.log(`Listening on port ${port}!`);
   
 });
