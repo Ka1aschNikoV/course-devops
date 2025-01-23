@@ -1,10 +1,10 @@
 
 import { expect } from 'chai';
-    import axios from 'axios';
+import axios from 'axios';
  
   
   // Your test logic here
-    const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
+const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
 
 const username = 'user1';
 const password = 'your_mom';

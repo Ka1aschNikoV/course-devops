@@ -46,7 +46,7 @@ build-job:
     - docker network ls
     - docker ps
 
-    - npm test
+    - docker exec test_container npm test
     - curl http://localhost:8197/state
     - docker-compose down # Start the cluster
   only:
