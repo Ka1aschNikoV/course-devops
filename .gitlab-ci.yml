@@ -44,12 +44,14 @@ build-job:
   script:
 
     - docker-compose up --build -d  #Start the cluster
+
     #curl http://localhost:8197/state
     #- docker network connect gitlab-runner_default nginx_frontend
     #- docker network connect test_network gitlab-runner
     #- docker network ls
     #- docker ps
     #- npm test
+    - sleep 10
     - docker exec test_container npm test
   
     #- curl http://nginx:8197/state
