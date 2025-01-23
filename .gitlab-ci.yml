@@ -38,7 +38,6 @@ build-job:
     - apk add docker-compose npm nodejs
   script:
     - docker compose -f ${COMPOSE_FILE} up -d # Start the cluster
-    
     - docker network ls
     - docker ps
 

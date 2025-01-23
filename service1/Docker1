@@ -1,6 +1,6 @@
 
 
-FROM node:19
+FROM node:latest
 
 # Establish workdir
 WORKDIR /usr/service1
