@@ -84,8 +84,14 @@ deploy-server:
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
-    - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-    - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/devopper.pem  # Write the private key to a file
+    - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/id_rsa  # Write the private key to a file
+    - chmod 600 ~/.ssh/id_rsa  # Set appropriate permissions for the private key
+
+    # Add the server's SSH fingerprint to known_hosts to avoid "Host key verification failed" error
+    - ssh-keyscan -H ubuntu@86.50.231.95 >> ~/.ssh/known_hosts
+
+    # Set the correct permissions for known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script:
     - ssh -i ~/.ssh/devopper.pem ubuntu@86.50.231.95 "mkdir -p ~/devopper"
     - ssh -i ~/.ssh/devopper.pem ubuntu@86.50.231.95 "cd ~/devopper"
