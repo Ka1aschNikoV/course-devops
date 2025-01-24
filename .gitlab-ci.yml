@@ -88,7 +88,7 @@ deploy-server:
     - chmod 600 ~/.ssh/id_rsa  # Set appropriate permissions for the private key
 
     # Add the server's SSH fingerprint to known_hosts to avoid "Host key verification failed" error
-    - ssh-keyscan -H ubuntu@86.50.231.95 >> ~/.ssh/known_hosts
+    - ssh-keyscan -H 86.50.231.95 >> ~/.ssh/known_hosts
 
     # Set the correct permissions for known_hosts
     - chmod 644 ~/.ssh/known_hosts
