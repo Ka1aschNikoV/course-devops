@@ -8,7 +8,7 @@
     "globals": "^15.13.0",
     "mocha": "11.0.1"
   },
-  "name": "course-devops",
+  "name": "devops-project",
   "description": "### Implemented optional features ### **List of optional features implemented.**",
   "version": "1.0.0",
   "main": "index.js",

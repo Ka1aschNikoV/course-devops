@@ -1,7 +1,7 @@
 services:
   
   test:
-    image: test:latest
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/test:latest
     container_name: test_container
     command: sh -c "npm install && npm start"
     build:
@@ -12,7 +12,7 @@ services:
       - test_network
       - gitlab-runner_default
   nginx:
-    image: nginx:latest
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/nginx:latest
     container_name: nginx_frontend
     
     build:
@@ -41,7 +41,7 @@ services:
 
   backend1:
     #image: service1:latest
-    container_name: backend1-1
+    container_name: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/backend1-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
       dockerfile: Docker1
@@ -66,7 +66,7 @@ services:
 
   backend2:
     #image: service1:latest
-    container_name: backend2-1
+    container_name: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/backend2-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
       dockerfile: Docker1
@@ -89,7 +89,7 @@ services:
 
   backend3:
     #image: service1:latest
-    container_name: backend3-1
+    container_name: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/backend3-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
       dockerfile: Docker1
@@ -111,7 +111,7 @@ services:
       REDIS_HOST: redis
 
   service2:
-    #image: service2:latest
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/service2:latest
     command: sh -c "mvn package && java -cp target/service2-1.0-SNAPSHOT.jar service2.App"
     container_name: service2
     build:
@@ -124,7 +124,7 @@ services:
   
 
   redis:
-    image: redis:latest
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/redis:latest
     container_name: redis
     networks:
       - frontend_network

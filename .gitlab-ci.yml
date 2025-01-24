@@ -5,7 +5,7 @@ stages:
   - deploy
 
 variables:
-  COMPOSE_PROJECT_NAME: "course-devops"  # Isolates the test environment
+  COMPOSE_PROJECT_NAME: "devops-project"  # Isolates the test environment
   COMPOSE_FILE: "docker-compose.yml" # Use a separate compose file for testing
   SSH_KNOWN_HOSTS: "86.50.231.95"
   
@@ -35,11 +35,14 @@ build-job:
 
   before_script:
     - apk add docker-compose docker
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    #- echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdinr
     
   script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdin
+    - sleep 10
     - docker-compose -f docker-compose.yml build
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdin
     - docker-compose -f docker-compose.yml push
     
 
