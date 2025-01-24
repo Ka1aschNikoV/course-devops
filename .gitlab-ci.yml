@@ -86,9 +86,9 @@ deploy-server:
     - mkdir -p ~/.ssh
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   script:
-    - ssh -i $SSH_SERVER_KEY ubuntu@86.50.231.95 "mkdir -p ~/devopper"
-    - ssh -i $SSH_SERVER_KEY ubuntu@86.50.231.95 "cd ~/devopper"
-    - ssh -i $SSH_SERVER_KEY ubuntu@86.50.231.95 "docker-compose pull"
-    - ssh -i $SSH_SERVER_KEY ubuntu@86.50.231.95 "docker-compose up -d"
+    - ssh -i "$SSH_SERVER_KEY" ubuntu@86.50.231.95 "mkdir -p ~/devopper"
+    - ssh -i "$SSH_SERVER_KEY" ubuntu@86.50.231.95 "cd ~/devopper"
+    - ssh -i "$SSH_SERVER_KEY" ubuntu@86.50.231.95 "docker-compose pull"
+    - ssh -i "$SSH_SERVER_KEY" ubuntu@86.50.231.95 "docker-compose up -d"
   only:
     - project
