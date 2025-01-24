@@ -93,10 +93,14 @@ deploy-server:
     # Set the correct permissions for known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
-    - ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 "cd /home/ubuntu/"
-    - ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 "mkdir -p devopper"
-    - ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 "cd /home/ubuntu/devopper"
-    - ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 "docker-compose pull"
-    - ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 "docker-compose up -d"
+    - | 
+      ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 << EOF
+        cd /home/ubuntu/
+        mkdir -p devopper
+        cd /home/ubuntu/devopper
+        echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
+        docker-compose pull
+        docker-compose up -d
+    EOF
   only:
     - project
