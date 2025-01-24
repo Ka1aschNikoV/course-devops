@@ -35,11 +35,11 @@ build-job:
 
   before_script:
     - apk add docker-compose docker
-    - docker login compse140.devops-gitlab.rd.tuni.fi:5050
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     
   script:
-    - docker build -t compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project .
-    - docker push compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project
+    - docker-compose -f docker-compose.yml build
+    - docker-compose -f docker-compose.yml push
     
 
   only:
@@ -74,6 +74,7 @@ test-job:
 deploy-server:
   stage: deploy
   before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
@@ -81,7 +82,8 @@ deploy-server:
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   script:
     - ssh ubuntu@86.50.231.95 "mkdir -p ~/devopper"
-    - docker pull compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project
+    - ssh ubuntu@86.50.231.95 "cd ~/devopper"
+    - ssh ubuntu@86.50.231.95 "docker-compose pull"
     - ssh ubuntu@86.50.231.95 "docker-compose up -d"
   only:
     - project
