@@ -66,9 +66,10 @@ test-job:
   before_script:
     - apk add docker-compose docker npm nodejs
     - npm install
+    - echo "$CI_REGISTRY_PASSWORD" | docker login compse140.devops-gitlab.rd.tuni.fi:5050 -u dpniva --password-stdin 
 
   script:
-    - docker-compose up -d #Start the cluster
+    - docker-compose -f docker-compose.yml up -d
     - sleep 10
     - docker exec test_container npm test
     - docker-compose down # Stop
