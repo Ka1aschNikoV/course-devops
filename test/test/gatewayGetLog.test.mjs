@@ -1,7 +1,7 @@
 import { expect } from 'chai';
     import axios from 'axios';
        
-    const SERVER_URL = 'http://localhost:8197/run-log';  // Keep the /request endpoint
+    const SERVER_URL = 'http://nginx:8197/run-log';  // Keep the /request endpoint
 
     const getAuthHeader = (username, password) => {
         const credentials = `${username}:${password}`;
@@ -10,7 +10,7 @@ import { expect } from 'chai';
 
     const AUTH_HEADER = getAuthHeader('user1', 'your_mom');
 
-    describe.skip('Server Log Tests', () => {
+    describe('Server Log Tests', () => {
         afterEach(done => {
             new Promise(resolve => setTimeout(resolve, 2000))
                 .then(() => done()) // Call done() once the promise resolves

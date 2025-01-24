@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
     
     // Your test logic here
-    const SERVER_URL = 'http://localhost:8197/state';  // Keep the /state endpoint
+    const SERVER_URL = 'http://nginx:8197/state';  // Keep the /state endpoint
 
 // Function to query the server state
 async function getServerState() {
@@ -21,7 +21,7 @@ async function getServerState() {
     }
 }
 
-describe.skip('Server State Tests', () => {
+describe('Server State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
             .then(() => done()) // Call done() once the promise resolves

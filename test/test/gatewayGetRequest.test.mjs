@@ -3,9 +3,9 @@ import { expect } from 'chai';
 
     
     // Your test logic here
-    const SERVER_URL = 'http://localhost:8197/request'; // Keep the /request endpoint
+    const SERVER_URL = 'http://nginx:8197/request'; // Keep the /request endpoint
 
-describe.skip('Request Response Tests', () => {
+describe('Request Response Tests', () => {
 
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 2000))
@@ -63,7 +63,7 @@ describe.skip('Request Response Tests', () => {
         const service1Content = body.split("service1:")
         const service1ContentSplit = service1Content[1].split('\n')
         service1ContentSplit.forEach(line => {
-            [key, value] = line.split(':');
+            const [key, value] = line.split(':');
             if (value) {
                 expect(value.trim()).to.not.be.empty; // Ensure value is non-empty
             }

@@ -4,6 +4,7 @@ const fs = require('fs');
 const app = express();
 const port = 8199;
 const Redis = require('ioredis');
+const lockfile = require('lockfile');
 const readline = require('readline');
 app.use(express.text());  // Express text parser
 
@@ -22,6 +23,7 @@ const redis = new Redis({
   host: process.env.REDIS_HOST || 'redis', // This points to the Redis container
   port: 6379,
 });
+
 
 // Middleware to block operations if the system is paused or offline
 app.use(async (req, res, next) => {
@@ -272,8 +274,23 @@ async function logStateChange(oldState, newState) {
 
   // Append the log entry to the file
   try {
-    fs.appendFileSync(RUN_FILE_PATH, logEntry, 'utf8');
-    console.log(`Logged state change: ${logEntry.trim()}`);
+    const lockPath = `${RUN_FILE_PATH}.lock`;  // Lock file path
+    setTimeout(() => {
+      lockfile.lock(lockPath, { retries: 10, retryWait: 100 }, (err) => {
+        if (err) {
+          console.error('Could not acquire lock', err);
+          return;
+        }
+        fs.appendFileSync(RUN_FILE_PATH, logEntry, 'utf8');
+        console.log(`Logged state change: ${logEntry.trim()}`);
+        lockfile.unlock(lockPath, (err) => {
+          if (err) {
+            console.error('Could not release lock', err);
+          }
+        });
+      });
+    }, Math.random());
+    // Try to acquire a lock before writing
   } catch (error) {
     console.error(`Failed to log state change: ${error.message}`);
   }

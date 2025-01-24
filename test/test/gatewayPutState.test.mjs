@@ -12,7 +12,7 @@ const base64Auth = btoa(username + ':' + password);
 
 describe('Server Put State Tests', () => {
     afterEach(done => {
-        new Promise(resolve => setTimeout(resolve, 3400))
+        new Promise(resolve => setTimeout(resolve, 3000))
             .then(() => done()) // Call done() once the promise resolves
             .catch(err => done(err)); // Pass any errors to done()
     });
@@ -49,9 +49,11 @@ describe('Server Put State Tests', () => {
         const response = await axios.get(SERVER_URL, {
 
         })
+        setTimeout(() => {
+            expect(response.status).to.equal(200, 'Expected status code 200');
+            expect(response.data).to.equal('RUNNING', 'Expected server to be in RUNNING state automatically')
+        }, 1000)
         
-        expect(response.status).to.equal(200, 'Expected status code 200');
-        expect(response.data).to.equal('RUNNING', 'Expected server to be in RUNNING state automatically')
     });
 
     it('should have Content-Type text/plain', async () => {
