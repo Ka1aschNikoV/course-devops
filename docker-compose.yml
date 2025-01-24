@@ -40,8 +40,8 @@ services:
       - gitlab-runner_default
 
   backend1:
-    #image: service1:latest
-    container_name: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/backend1-1
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/service1:latest
+    container_name: backend1-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
       dockerfile: Docker1
@@ -65,8 +65,8 @@ services:
       REDIS_HOST: redis
 
   backend2:
-    #image: service1:latest
-    container_name: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/backend2-1
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/service1:latest
+    container_name: backend2-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
       dockerfile: Docker1
@@ -88,8 +88,8 @@ services:
       REDIS_HOST: redis
 
   backend3:
-    #image: service1:latest
-    container_name: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/backend3-1
+    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/service1:latest
+    container_name: backend3-1
     command: sh -c "npm install && npm start" && /bin/sh -c "cp ./run-log.log /shared/run-logs/run-log.log"
     build:
       dockerfile: Docker1
@@ -124,7 +124,7 @@ services:
   
 
   redis:
-    image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/redis:latest
+    image: redis:latest
     container_name: redis
     networks:
       - frontend_network
