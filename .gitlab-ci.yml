@@ -39,6 +39,7 @@ build-job:
     
   script:
     - docker-compose -f docker-compose.yml build
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - docker-compose -f docker-compose.yml push
     
 
