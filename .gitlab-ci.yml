@@ -35,14 +35,15 @@ build-job:
 
   before_script:
     - apk add docker-compose docker
-
+    - docker login compse140.devops-gitlab.rd.tuni.fi:5050
+    
   script:
-    - docker-compose build --no-cache  #Start the cluster
+    - docker build -t compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project .
+    - docker push compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project
+    
+
   only:
     - project 
-  artifacts:
-    paths:
-      - builds/*  # Specify the files/folders that should be treated as artifacts
 
 
 test-job:
@@ -80,8 +81,7 @@ deploy-server:
     - echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
   script:
     - ssh ubuntu@86.50.231.95 "mkdir -p ~/devopper"
-    - scp -r ./builds/* ubuntu@86.50.231.95:~/devopper
-    - ssh ubuntu@86.50.231.95 "docker-compose --build"
+    - docker pull compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project
     - ssh ubuntu@86.50.231.95 "docker-compose up -d"
   only:
     - project
