@@ -5,10 +5,13 @@ import { expect } from 'chai';
     // Your test logic here
     const SERVER_URL = 'http://nginx:8197/request'; // Keep the /request endpoint
 
+    const username = 'user1';
+const password = 'your_mom';
+const base64Auth = btoa(username + ':' + password);
 describe('Request Response Tests', () => {
 
     afterEach(done => {
-        new Promise(resolve => setTimeout(resolve, 2000))
+        new Promise(resolve => setTimeout(resolve, 3400))
             .then(() => done()) // Call done() once the promise resolves
             .catch(err => done(err)); // Pass any errors to done()
     });

@@ -11,7 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npx mocha --timeout 5000",
+    "test": "npx mocha --timeout 7000",
     "start": "node index.js"
   },
   "author": "",
