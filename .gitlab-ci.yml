@@ -87,6 +87,8 @@ deploy-server:
     - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/devopper.pem  # Write the private key to a file
     - chmod 600 ~/.ssh/devopper.pem  # Set appropriate permissions for the private key
     - ls
+    - cd /home
+    - ls
     # Add the server's SSH fingerprint to known_hosts to avoid "Host key verification failed" error
     - ssh-keyscan -H 86.50.231.95 >> ~/.ssh/known_hosts
     - sleep 10
