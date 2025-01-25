@@ -273,9 +273,10 @@ async function logStateChange(oldState, newState) {
   const logEntry = `${timestamp}: ${oldState}->${newState}\n`;
 
   // Append the log entry to the file
-  try {
-    const lockPath = `${RUN_FILE_PATH}.lock`;  // Lock file path
-    setTimeout(() => {
+  setTimeout(() => {
+    // Try to acquire a lock before writing
+    try {
+      const lockPath = `${RUN_FILE_PATH}.lock`;  // Lock file path
       lockfile.lock(lockPath, { retries: 10, retryWait: 100 }, (err) => {
         if (err) {
           console.error('Could not acquire lock', err);
@@ -289,11 +290,10 @@ async function logStateChange(oldState, newState) {
           }
         });
       });
-    }, Math.random());
-    // Try to acquire a lock before writing
-  } catch (error) {
-    console.error(`Failed to log state change: ${error.message}`);
-  }
+    }
+    catch (error) {
+      console.error(`Failed to log state change: ${error.message}`);
+    }}, Math.random());
 }
 
 // Monitor user logins
