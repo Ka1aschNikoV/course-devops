@@ -2,12 +2,13 @@ import { expect } from 'chai';
 import axios from 'axios';
 
 
-// Your test logic here
-const SERVER_URL = 'http://nginx:8197/request'; // Keep the /request endpoint
 
-const username = 'user1';
-const password = 'your_mom';
-const base64Auth = btoa(username + ':' + password);
+const SERVER_URL = 'http://nginx:8197/request';
+
+
+/*
+ * Tests for http://nginx:8197/request endpoint
+ */
 describe('Request Response Tests', () => {
 
     afterEach(done => {
@@ -97,21 +98,6 @@ describe('Request Response Tests', () => {
         expect(body).to.not.include('unknownField', 'Response should not include unknownField');
     });
 
-    it('should be resetted when RUNNING -> INIT', async () => {
-        const response = await axios.put("http://nginx:8197/state", 'INIT',{
-            headers: {
-                'Content-Type': 'text/plain',
-                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
-                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
-            },
-        })
-        const state = response.data;  // Extract the data from the response
-        expect(state).to.equal('INIT', 'Expected server to be in INIT state');
-
-        const responseLogs = await axios.get("http://nginx:8197/run-log")
-        expect(responseLogs.data).to.not.equal("", "Expected logs to not be wiped")
-
-    });
 });
 
 

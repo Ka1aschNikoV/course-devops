@@ -11,6 +11,8 @@ app.use(express.text());  // Express text parser
 
 // Flag to track downtime
 let downtimeFlag = false;
+
+// Lock logging to avoid race condition
 let runLogLock = false;
 
 // Activity logging
@@ -193,6 +195,12 @@ app.get('/api', async (req,res) => {
 
 });
 
+
+/*
+* 8199/debug-monitor GET
+*
+* Request debug monitor info for monitoring
+*/
 app.get('/debug-monitor', async (req,res) => {
   await redis.incr('monitor_count');
   const path = '/etc/container_creation_time.txt';
@@ -310,6 +318,8 @@ async function sh(cmd) {
     });
   });
 }
+
+
 // Add new activity into log file
 async function logStateChange(oldState, newState) {
 
@@ -375,6 +385,7 @@ function monitorLogs(logFile) {
   });
 }
 
+// Reset system to initial state
 async function resetSystem() {
 
   try {
@@ -397,6 +408,7 @@ async function resetSystem() {
   console.log('Successfully restored system to INIT');
 }
 
+// Change system state
 async function changeState(state) {
   const currState = await getSystemState();
   await setSystemState(state);
@@ -408,6 +420,7 @@ async function changeState(state) {
   }
 }
 
+// Track total requests
 async function incrementMonitor() {
   try {
     await redis.incr('request_count');

@@ -55,16 +55,21 @@
 <body>
 
 <div class="control-panel-container">
+
     <h2>Control Panel</h2>
     <!-- REQUEST and STOP buttons -->
     <button id="requestButton" onclick="handleRequest()">REQUEST</button>
     <button id="stopButton" onclick="handleStop()">STOP</button>
     
-    <!-- Text area -->
+    <!-- Functionality Text area -->
     <textarea id="outputArea" placeholder="Output will be displayed here..." readonly></textarea>
 
+    
     <h2>Debug Monitor</h2>
+    <!-- MONITOR button -->
     <button class="monitor-btn" onclick="fetchDebugInfo()">Monitor</button>
+
+    <!-- Debug Monitor Text area -->
     <textarea class="debug-box" id="debugBox" placeholder="" readonly>Click Monitor to fetch debug information.
     </textarea>
 
@@ -120,6 +125,7 @@
             document.getElementById("outputArea").value = "Error: " + error.message;
         }
     }
+    // Function to handle MONITOR button click
     async function fetchDebugInfo() {
       const debugBox = document.getElementById('debugBox');
       debugBox.innerHTML = 'Fetching debug information...';
@@ -128,7 +134,8 @@
         // Fetch container stats
         const containerResponse = await fetch('/debug-monitor/');
         const responseData = await containerResponse.text();
-        console.log(responseData);
+
+        // Insert data
         debugBox.innerHTML = `${responseData} `;
       } catch (error) {
         debugBox.innerHTML = `Error fetching debug information: ${error.message}`;

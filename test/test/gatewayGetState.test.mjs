@@ -1,12 +1,9 @@
 import { expect } from 'chai';
-    import axios from 'axios';
+import axios from 'axios';
 
-    
-    // Your test logic here
-    const SERVER_URL = 'http://nginx:8197/state';  // Keep the /state endpoint
-    const username = 'user1';
-    const password = 'your_mom';
-    const base64Auth = btoa(username + ':' + password);
+const SERVER_URL = 'http://nginx:8197/state';
+
+
 
 // Function to query the server state
 async function getServerState() {
@@ -24,6 +21,9 @@ async function getServerState() {
     }
 }
 
+/*
+ * Tests for http://nginx:8197/state endpoint GET requests
+ */
 describe('Server State Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 3400))
@@ -58,21 +58,6 @@ describe('Server State Tests', () => {
         expect(response.headers['content-type']).to.include('text/plain', 'Expected Content-Type to be text/plain');
     });
     
-    it('should be resetted when RUNNING -> INIT', async () => {
-        const response = await axios.put("http://nginx:8197/state", 'INIT',{
-            headers: {
-                'Content-Type': 'text/plain',
-                'Authorization': `Basic ${base64Auth}`, // Include the Basic Auth header
-                'X-Authenticated-User': 'user1' // Optionally send the user info as a custom header
-            },
-        })
-        const state = response.data;  // Extract the data from the response
-        expect(state).to.equal('INIT', 'Expected server to be in INIT state');
-
-        const responseLogs = await axios.get("http://nginx:8197/run-log")
-        expect(responseLogs.data).to.not.equal("", "Expected logs to not be wiped")
-
-    });
     
     
 

@@ -1,5 +1,6 @@
 services:
   
+  # Test container to run tests, could be killed in production but isn't
   test:
     image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/test:latest
     container_name: test_container
@@ -10,7 +11,7 @@ services:
     
     networks: 
       - test_network
-      - gitlab-runner_default
+      # - gitlab-runner_default
   nginx:
     image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/nginx:latest
     container_name: nginx_frontend
@@ -24,9 +25,9 @@ services:
       - "8198:8198"
     # Test port
       - "8197:8197"
-    expose: 
-      - 8197
-      - 8198
+    #expose: 
+    #  - 8197
+    #  - 8198
     volumes:
       - nginx-logs:/var/log/nginx
     
@@ -37,7 +38,7 @@ services:
     networks:
       - test_network
       - frontend_network
-      - gitlab-runner_default
+     # - gitlab-runner_default
 
   backend1:
     image: compse140.devops-gitlab.rd.tuni.fi:5050/dpniva/devops-project/service1:latest
@@ -60,7 +61,7 @@ services:
     networks:
       - frontend_network
       - backend
-      - gitlab-runner_default
+     #  - gitlab-runner_default
     environment:
       REDIS_HOST: redis
 
@@ -83,7 +84,7 @@ services:
     networks:
       - frontend_network
       - backend
-      - gitlab-runner_default
+     #  - gitlab-runner_default
     environment:
       REDIS_HOST: redis
 
@@ -106,7 +107,7 @@ services:
     networks:
       - frontend_network
       - backend
-      - gitlab-runner_default
+     #  - gitlab-runner_default
     environment:
       REDIS_HOST: redis
 
@@ -122,7 +123,7 @@ services:
     networks:
       - backend
   
-
+  # State storage
   redis:
     image: redis:latest
     container_name: redis
@@ -137,10 +138,8 @@ networks:
   # Connection between Nginx front and load balanced servers
   frontend_network:
     driver: bridge
-  test_network:
-    driver: bridge
-  gitlab-runner_default:
-    driver: bridge
+  #gitlab-runner_default:
+   # driver: bridge
 volumes:
   nginx-logs:
   run-logs:

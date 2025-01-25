@@ -3,4 +3,6 @@ FROM node:latest
 # Establish workdir
 WORKDIR /usr/testing
 COPY ./ /usr/testing
+
+# Test command
 CMD ["npm", "test"]

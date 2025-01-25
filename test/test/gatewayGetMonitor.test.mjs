@@ -1,13 +1,17 @@
 import { expect } from 'chai';
 import axios from 'axios';
        
-const SERVER_URL = 'http://nginx:8198/debug-monitor';  // Keep the /request endpoint describe('Server Log Tests', () => {
+const SERVER_URL = 'http://nginx:8198/debug-monitor';
 const getAuthHeader = (username, password) => {
     const credentials = `${username}:${password}`;
     return `Basic ${Buffer.from(credentials).toString('base64')}`;
 };
 
 const AUTH_HEADER = getAuthHeader('user1', 'your_mom');
+
+/*
+ * Tests for http://nginx:8198/debug-monitor endpoint
+ */
 
 describe('Debug Monitor Tests', () => {
     afterEach(done => {

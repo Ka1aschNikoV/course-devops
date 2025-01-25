@@ -1,14 +1,15 @@
 stages:
-  - lint
-  - build
-  - test
-  - deploy
+  - lint # Static analysis
+  - build # Build image and send to container registry
+  - test # Test built images
+  - deploy # Deploy build images to external server through ssh
 
 variables:
   COMPOSE_PROJECT_NAME: "devops-project"  # Isolates the test environment
   COMPOSE_FILE: "docker-compose.yml" # Use a separate compose file for testing
-  SSH_KNOWN_HOSTS: "86.50.231.95"
-  
+  SSH_KNOWN_HOSTS: "86.50.231.95" # Could be a CI variable instead, but meh
+
+# Static analysis step
 eslint-job:
   stage: lint
   image: node:latest
@@ -19,7 +20,7 @@ eslint-job:
   only:
     - project
 
-
+# Build step
 build-job:
   stage: build
   image: docker:latest # Docker-in-Docker support
@@ -34,6 +35,7 @@ build-job:
     DOCKER_DRIVER: overlay2
 
   before_script:
+    # Install docker and docker-compose
     - apk add docker-compose docker
     #- echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdinr
@@ -45,11 +47,10 @@ build-job:
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdin
     - docker-compose -f docker-compose.yml push
     
-
   only:
     - project 
 
-
+# Test step
 test-job:
   stage: test
   image: docker:latest # Docker-in-Docker support
@@ -69,41 +70,46 @@ test-job:
     - echo "$CI_REGISTRY_PASSWORD" | docker login compse140.devops-gitlab.rd.tuni.fi:5050 -u dpniva --password-stdin 
 
   script:
+    # Start container services
     - docker-compose -f docker-compose.yml up -d
-    - sleep 10
+    # Test container services through test_container
     - docker exec test_container npm test
-    - docker-compose down # Stop
+    # Stop containers after testing
+    - docker-compose down
   only:
     - project 
 
+# Deploy step
 deploy-server:
   stage: deploy
   before_script:
+    # Prepare SSH connection
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
-    - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/id_rsa  # Write the private key to a file
-    - chmod 600 ~/.ssh/id_rsa # Set appropriate permissions for the private key
-    # Add the server's SSH fingerprint to known_hosts to avoid "Host key verification failed" error
+    - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/id_rsa  
+    - chmod 600 ~/.ssh/id_rsa
     - ssh-keyscan -H 86.50.231.95 >> ~/.ssh/known_hosts
-    - sleep 10
-    # Set the correct permissions for known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
+      # Create folder for deployment
     - |
       ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 << EOF
           cd /home/ubuntu/
           mkdir -p devopper
           cd /home/ubuntu/devopper
       EOF
+
+    # Secure copy over necessary files
     - scp -i ~/.ssh/id_rsa -r ./docker-compose.yml ubuntu@86.50.231.95:/home/ubuntu/devopper/
     - scp -i ~/.ssh/id_rsa -r ./nginx ubuntu@86.50.231.95:/home/ubuntu/devopper/
     - scp -i ~/.ssh/id_rsa -r ./service1 ubuntu@86.50.231.95:/home/ubuntu/devopper/
     - scp -i ~/.ssh/id_rsa -r ./service2 ubuntu@86.50.231.95:/home/ubuntu/devopper/
     - scp -i ~/.ssh/id_rsa -r ./test ubuntu@86.50.231.95:/home/ubuntu/devopper/
 
+    # Pull images and start containers
     - | 
       ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 << EOF
         cd /home/ubuntu/devopper
@@ -114,7 +120,3 @@ deploy-server:
       EOF
   only:
     - project
-
-    #comment
-    #bruh
-    
