@@ -129,7 +129,7 @@ services:
     container_name: redis
     networks:
       - frontend_network
-      - gitlab-runner_default
+     # - gitlab-runner_default
 
 networks:
   # Connection between load balanced servers and service2
