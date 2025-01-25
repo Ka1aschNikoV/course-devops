@@ -11,6 +11,7 @@ app.use(express.text());  // Express text parser
 
 // Flag to track downtime
 let downtimeFlag = false;
+let runLogLock = false;
 
 // Activity logging
 const RUN_FILE_PATH = '/shared/run-logs/run-log.log';
@@ -42,6 +43,7 @@ app.use(async (req, res, next) => {
   }
   else {
     next();
+    await incrementMonitor();
     if (!downtimeFlag) {
       downtimeFlag = true;
       console.log('Server is going down for 2 seconds after the response.');
@@ -191,7 +193,49 @@ app.get('/api', async (req,res) => {
 
 });
 
+app.get('/debug-monitor', async (req,res) => {
+  await redis.incr('monitor_count');
+  const path = '/etc/container_creation_time.txt';
+  fs.readFile(path, 'utf8' ,async  (err, data) => {
+    if (err) {
+      console.error('Error reading container creation time:', err);
+      return;
+    }
+    // Get the container creation time (in seconds since Unix epoch)
+    const containerCreationTime = parseInt(data.trim(), 10);
+    // Get the current time in seconds since the Unix epoch
+    const currentTime = Math.floor(Date.now() / 1000);
+    // Calculate uptime in seconds
+    const uptimeSeconds = currentTime - containerCreationTime;
+    // Calculate uptime in human-readable format (days, hours, minutes, seconds)
+    const days = Math.floor(uptimeSeconds / 86400);
+    const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+    const seconds = uptimeSeconds % 60;
+    const monitor = await redis.get('monitor_count');
+    const request = await redis.get('request_count');
+    console.log(monitor);
+    console.log(request);
 
+    const debugJson = {
+      uptime: 'Days:' + days +
+              ' Hours:' + hours +
+              ' Minutes:' + minutes +
+              ' Seconds:' + seconds,
+      request: 'Total requests: ' + request,
+      monitor: 'Monitor requests: ' + monitor,
+    };
+    let plainTextResponse = '';
+    for (const [key, value] of Object.entries(debugJson)) {
+      plainTextResponse += `${key}: ${JSON.stringify(value)}\n`;
+
+    }
+    console.log(plainTextResponse);
+    res.setHeader('Content-Type', 'text/plain');
+    res.status(200).send(plainTextResponse);
+    res.end();
+  });
+});
 
 // Set new system state
 async function setSystemState(state) {
@@ -293,33 +337,40 @@ async function logStateChange(oldState, newState) {
     }
     catch (error) {
       console.error(`Failed to log state change: ${error.message}`);
-    }}, Math.random());
+    }}, 100);
 }
 
 // Monitor user logins
 function monitorLogs(logFile) {
-  // Unwatch previous listeners to avoid a mess
-
-  // Monitor the file for changes with fs.watchFilec
   fs.watchFile(logFile, (curr, prev) => {
     if (curr.size > prev.size) {
+      // Only proceed if not already locked
+      console.log('Locked');
       // New lines have been added, read the new data
       const stream = fs.createReadStream(logFile, { encoding: 'utf-8', flags: 'r', start: prev.size });
       const rl = readline.createInterface({ input: stream });
-
+      if (runLogLock) {
+        return;  // Exit early if the function is locked
+      }
+      runLogLock = true;
       rl.on('line', async (line) => {
         const match = line.match(/(?<ip>[\d\.]+) - (?<user>\S+) \[(?<time>[^\]]+)\]/);
         if (match) {
           const { ip, user, time } = match.groups;
           const seenUsers = await getSeenUsers();
-          //console.log(match)
-          //console.log(seenUsers)
-          if(seenUsers === null && user!=='-') {
+
+          if (seenUsers === null && user !== '-') {
             await changeState('RUNNING');
             trackSeenUser(user);
           }
         }
       });
+
+      // When done processing, release the lock
+      rl.on('close', () => {
+        runLogLock = false;  // Release the lock when done
+      });
+
     }
   });
 }
@@ -357,6 +408,15 @@ async function changeState(state) {
   }
 }
 
+async function incrementMonitor() {
+  try {
+    await redis.incr('request_count');
+    console.log('Request increment increased');
+  }
+  catch(err) {
+    console.error('Request increment failed', err);
+  }
+}
 
 // Start server
 app.listen(port, async () => {
@@ -364,7 +424,11 @@ app.listen(port, async () => {
   fs.writeFileSync(AUTH_LOG_FILE, '', { flag: 'w' });
   fs.writeFileSync(RUN_FILE_PATH, '', { flag: 'w' });
   monitorLogs(AUTH_LOG_FILE);
-  await changeState('INIT');
+  setTimeout(async () => {
+    await changeState('INIT');
+  }, 1000);
+  await redis.set('request_count', 0);
+  await redis.set('monitor_count', 0);
   console.log(`Listening on port ${port}!`);
 
 });

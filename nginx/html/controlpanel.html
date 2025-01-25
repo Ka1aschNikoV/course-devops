@@ -62,7 +62,14 @@
     
     <!-- Text area -->
     <textarea id="outputArea" placeholder="Output will be displayed here..." readonly></textarea>
+
+    <h2>Debug Monitor</h2>
+    <button class="monitor-btn" onclick="fetchDebugInfo()">Monitor</button>
+    <textarea class="debug-box" id="debugBox" placeholder="" readonly>Click Monitor to fetch debug information.
+    </textarea>
+
 </div>
+
 
 <script>
     // Function to handle REQUEST button click
@@ -112,6 +119,20 @@
         } catch (error) {
             document.getElementById("outputArea").value = "Error: " + error.message;
         }
+    }
+    async function fetchDebugInfo() {
+      const debugBox = document.getElementById('debugBox');
+      debugBox.innerHTML = 'Fetching debug information...';
+
+      try {
+        // Fetch container stats
+        const containerResponse = await fetch('/debug-monitor/');
+        const responseData = await containerResponse.text();
+        console.log(responseData);
+        debugBox.innerHTML = `${responseData} `;
+      } catch (error) {
+        debugBox.innerHTML = `Error fetching debug information: ${error.message}`;
+      }
     }
 </script>
 

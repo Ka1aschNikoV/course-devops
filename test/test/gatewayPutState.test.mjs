@@ -45,14 +45,19 @@ describe('Server Put State Tests', () => {
         expect(response.status).to.equal(200, 'Expected status code 200');
     });
 
-    it('should return 200 status code for /state and state is RUNNING', async () => {
+    it('should return 200 status code for /state', async () => {
         const response = await axios.get(SERVER_URL, {
 
         })
-        setTimeout(() => {
-            expect(response.status).to.equal(200, 'Expected status code 200');
-            //expect(response.data).to.equal('RUNNING', 'Expected server to be in RUNNING state automatically')
-        }, 2000)
+        expect(response.status).to.equal(200, 'Expected status code 200');
+        
+    });
+
+    it('should be RUNNING automatically after login event', async () => {
+        const response = await axios.get(SERVER_URL, {
+
+        });
+        expect(response.data).to.equal('RUNNING', 'Expected server to be in RUNNING state automatically');
         
     });
 

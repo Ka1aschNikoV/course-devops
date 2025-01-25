@@ -6,3 +6,4 @@ FROM node:latest
 WORKDIR /usr/service1
 COPY ./ /usr/service1
 COPY run-log.log /shared/run-logs/run-log.log
+RUN echo "$(date +%s)" > /etc/container_creation_time.txt
