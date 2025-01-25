@@ -83,32 +83,32 @@ deploy-server:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/devopper.pem  # Write the private key to a file
-    - chmod 600 ~/.ssh/devopper.pem  # Set appropriate permissions for the private key
+    - mkdir -p /home/dockremap/.ssh
+    - echo "$SSH_SERVER_KEY" | tr -d '\r' > /home/dockremap/.ssh/devopper.pem  # Write the private key to a file
+    - chmod 600 /home/dockremap/.ssh/devopper.pem  # Set appropriate permissions for the private key
     - ls
     - cd /home
     - ls
     # Add the server's SSH fingerprint to known_hosts to avoid "Host key verification failed" error
-    - ssh-keyscan -H 86.50.231.95 >> ~/.ssh/known_hosts
+    - ssh-keyscan -H 86.50.231.95 >> /home/dockremap/.ssh/known_hosts
     - sleep 10
     # Set the correct permissions for known_hosts
-    - chmod 644 ~/.ssh/known_hosts
+    - chmod 644 /home/dockremap/.ssh/known_hosts
   script:
     - |
-      ssh -i ~/.ssh/devopper.pem ubuntu@86.50.231.95 << EOF
+      ssh -i /home/dockremap/.ssh/devopper.pem ubuntu@86.50.231.95 << EOF
           cd /home/ubuntu/
           mkdir -p devopper
           cd /home/ubuntu/devopper
       EOF
-    - scp -i ~/.ssh/devopper.pem -r ./docker-compose.yml ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i ~/.ssh/devopper.pem -r ./nginx ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i ~/.ssh/devopper.pem -r ./service1 ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i ~/.ssh/devopper.pem -r ./service2 ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i ~/.ssh/devopper.pem -r ./test ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i /home/dockremap/.ssh/devopper.pem -r ./docker-compose.yml ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i /home/dockremap/.ssh/devopper.pem -r ./nginx ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i /home/dockremap/.ssh/devopper.pem -r ./service1 ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i /home/dockremap/.ssh/devopper.pem -r ./service2 ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i /home/dockremap/.ssh/devopper.pem -r ./test ubuntu@86.50.231.95:/home/ubuntu/devopper/
 
     - | 
-      ssh -i ~/.ssh/devopper.pem ubuntu@86.50.231.95 << EOF
+      ssh -i /home/dockremap/.ssh/devopper.pem ubuntu@86.50.231.95 << EOF
         cd /home/ubuntu/devopper
         echo "$CI_REGISTRY_PASSWORD" | sudo docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         ls
