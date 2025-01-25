@@ -1,7 +1,7 @@
 stages:
-#  - lint
-#  - build
-#  - test
+  - lint
+  - build
+  - test
   - deploy
 
 variables:
@@ -9,32 +9,32 @@ variables:
   COMPOSE_FILE: "docker-compose.yml" # Use a separate compose file for testing
   SSH_KNOWN_HOSTS: "86.50.231.95"
   
-#eslint-job:
-#  stage: lint
-#  image: node:latest
-#  before_script:
-#    - npm install
-#  script:
-#    - npm run lint
-#  only:
-#    - project
+eslint-job:
+  stage: lint
+  image: node:latest
+  before_script:
+    - npm install
+  script:
+    - npm run lint
+  only:
+    - project
 
 
-#build-job:
-#  stage: build
-#  image: docker:latest # Docker-in-Docker support
-#  services:
-#    - name: docker:24.0.2-dind # Docker daemon in the CI runner
-#      alias: dockerdind
-#  variables:
-#    DOCKER_HOST: tcp://dockerdind:2375/
+build-job:
+  stage: build
+  image: docker:latest # Docker-in-Docker support
+  services:
+    - name: docker:24.0.2-dind # Docker daemon in the CI runner
+      alias: dockerdind
+  variables:
+    DOCKER_HOST: tcp://dockerdind:2375/
 
-#    DOCKER_TLS_CERTDIR: ""
+    DOCKER_TLS_CERTDIR: ""
 
-#    DOCKER_DRIVER: overlay2
+    DOCKER_DRIVER: overlay2
 
-#  before_script:
-#    - apk add docker-compose docker
+  before_script:
+    - apk add docker-compose docker
     #- echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdinr
     
@@ -46,35 +46,35 @@ variables:
     - docker-compose -f docker-compose.yml push
     
 
-#  only:
-#    - project 
+  only:
+    - project 
 
 
-#test-job:
-#  stage: test
-#  image: docker:latest # Docker-in-Docker support
-#  services:
-#    - name: docker:24.0.2-dind # Docker daemon in the CI runner
-#      alias: dockerdind
-#  variables:
-#    DOCKER_HOST: tcp://dockerdind:2375/
+test-job:
+  stage: test
+  image: docker:latest # Docker-in-Docker support
+  services:
+    - name: docker:24.0.2-dind # Docker daemon in the CI runner
+      alias: dockerdind
+  variables:
+    DOCKER_HOST: tcp://dockerdind:2375/
 
-#    DOCKER_TLS_CERTDIR: ""
+    DOCKER_TLS_CERTDIR: ""
 
-#    DOCKER_DRIVER: overlay2
+    DOCKER_DRIVER: overlay2
 
   before_script:
     - apk add docker-compose docker npm nodejs
     - npm install
     - echo "$CI_REGISTRY_PASSWORD" | docker login compse140.devops-gitlab.rd.tuni.fi:5050 -u dpniva --password-stdin 
 
-#  script:
-#    - docker-compose -f docker-compose.yml up -d
-#    - sleep 10
-#    - docker exec test_container npm test
-#    - docker-compose down # Stop
-#  only:
-#    - project 
+  script:
+    - docker-compose -f docker-compose.yml up -d
+    - sleep 10
+    - docker exec test_container npm test
+    - docker-compose down # Stop
+  only:
+    - project 
 
 deploy-server:
   stage: deploy
@@ -83,32 +83,29 @@ deploy-server:
     - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p /home/dockremap/.ssh
-    - echo "$SSH_SERVER_KEY" | tr -d '\r' > /home/dockremap/.ssh/devopper.pem  # Write the private key to a file
-    - chmod 600 /home/dockremap/.ssh/devopper.pem  # Set appropriate permissions for the private key
-    - ls
-    - cd /home
-    - ls
+    - mkdir -p ~/.ssh
+    - echo "$SSH_SERVER_KEY" | tr -d '\r' > ~/.ssh/id_rsa  # Write the private key to a file
+    - chmod 600 ~/.ssh/id_rsa # Set appropriate permissions for the private key
     # Add the server's SSH fingerprint to known_hosts to avoid "Host key verification failed" error
-    - ssh-keyscan -H 86.50.231.95 >> /home/dockremap/.ssh/known_hosts
+    - ssh-keyscan -H 86.50.231.95 >> ~/.ssh/known_hosts
     - sleep 10
     # Set the correct permissions for known_hosts
-    - chmod 644 /home/dockremap/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script:
     - |
-      ssh -i /home/dockremap/.ssh/devopper.pem ubuntu@86.50.231.95 << EOF
+      ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 << EOF
           cd /home/ubuntu/
           mkdir -p devopper
           cd /home/ubuntu/devopper
       EOF
-    - scp -i /home/dockremap/.ssh/devopper.pem -r ./docker-compose.yml ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i /home/dockremap/.ssh/devopper.pem -r ./nginx ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i /home/dockremap/.ssh/devopper.pem -r ./service1 ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i /home/dockremap/.ssh/devopper.pem -r ./service2 ubuntu@86.50.231.95:/home/ubuntu/devopper/
-    - scp -i /home/dockremap/.ssh/devopper.pem -r ./test ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i ~/.ssh/id_rsa -r ./docker-compose.yml ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i ~/.ssh/id_rsa -r ./nginx ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i ~/.ssh/id_rsa -r ./service1 ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i ~/.ssh/id_rsa -r ./service2 ubuntu@86.50.231.95:/home/ubuntu/devopper/
+    - scp -i ~/.ssh/id_rsa -r ./test ubuntu@86.50.231.95:/home/ubuntu/devopper/
 
     - | 
-      ssh -i /home/dockremap/.ssh/devopper.pem ubuntu@86.50.231.95 << EOF
+      ssh -i ~/.ssh/id_rsa ubuntu@86.50.231.95 << EOF
         cd /home/ubuntu/devopper
         echo "$CI_REGISTRY_PASSWORD" | sudo docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
         ls
