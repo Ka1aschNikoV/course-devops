@@ -1,7 +1,7 @@
 services:
   
   gitlab-runner:
-    image: gitlab/gitlab-runner:latest # Official GitLab Runner image
+    image: gitlab/gitlab-runner:latest
     container_name: gitlab-runner
     restart: always # Automatically restart if the container stops
     volumes:
@@ -9,5 +9,5 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock # Enable Docker-in-Docker for building images
     environment:
       - RUNNER_NAME=gitlab-runner
-      - CI_SERVER_URL=https://compse140.devops-gitlab.rd.tuni.fi # Replace with your GitLab instance URL
+      - CI_SERVER_URL=https://compse140.devops-gitlab.rd.tuni.fi 
       - REGISTER_NON_INTERACTIVE=true

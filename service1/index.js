@@ -222,8 +222,6 @@ app.get('/debug-monitor', async (req,res) => {
     const seconds = uptimeSeconds % 60;
     const monitor = await redis.get('monitor_count');
     const request = await redis.get('request_count');
-    console.log(monitor);
-    console.log(request);
 
     const debugJson = {
       uptime: 'Days:' + days +
@@ -238,7 +236,6 @@ app.get('/debug-monitor', async (req,res) => {
       plainTextResponse += `${key}: ${JSON.stringify(value)}\n`;
 
     }
-    console.log(plainTextResponse);
     res.setHeader('Content-Type', 'text/plain');
     res.status(200).send(plainTextResponse);
     res.end();
@@ -331,6 +328,27 @@ async function logStateChange(oldState, newState) {
     // Try to acquire a lock before writing
     try {
       const lockPath = `${RUN_FILE_PATH}.lock`;  // Lock file path
+<<<<<<< HEAD
+      setTimeout(() => {
+        lockfile.lock(lockPath, { retries: 10, retryWait: 100 }, (err) => {
+          if (err) {
+            console.error('Could not acquire lock', err);
+            return;
+          }
+          fs.appendFileSync(RUN_FILE_PATH, logEntry, 'utf8');
+          console.log(`Logged state change: ${logEntry.trim()}`);
+          lockfile.unlock(lockPath, (err) => {
+            if (err) {
+              console.error('Could not release lock', err);
+            }
+          });
+        });
+      }, Math.random());
+    }
+    catch (error) {
+      console.error(`Failed to log state change: ${error.message}`);
+    }}, 100);
+=======
       lockfile.lock(lockPath, { retries: 10, retryWait: 100 }, (err) => {
         if (err) {
           console.error('Could not acquire lock', err);
@@ -347,7 +365,8 @@ async function logStateChange(oldState, newState) {
     }
     catch (error) {
       console.error(`Failed to log state change: ${error.message}`);
-    }}, 100);
+    }}, Math.random());
+>>>>>>> 0395629 (best copes)
 }
 
 // Monitor user logins
@@ -424,7 +443,6 @@ async function changeState(state) {
 async function incrementMonitor() {
   try {
     await redis.incr('request_count');
-    console.log('Request increment increased');
   }
   catch(err) {
     console.error('Request increment failed', err);

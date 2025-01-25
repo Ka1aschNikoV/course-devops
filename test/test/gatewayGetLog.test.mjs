@@ -10,7 +10,13 @@ const getAuthHeader = (username, password) => {
 const AUTH_HEADER = getAuthHeader('user1', 'your_mom');
 
 
+<<<<<<< HEAD
+/*
+ * Tests for http://nginx:8197/run-log endpoint
+ */
+=======
 
+>>>>>>> 86e817a (all tests pass?)
 describe('Server Log Tests', () => {
     afterEach(done => {
         new Promise(resolve => setTimeout(resolve, 3400))

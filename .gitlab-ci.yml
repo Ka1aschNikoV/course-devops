@@ -73,6 +73,7 @@ test-job:
     # Start container services
     - docker-compose -f docker-compose.yml up -d
     # Test container services through test_container
+    - sleep 20
     - docker exec test_container npm test
     # Stop containers after testing
     - docker-compose down

@@ -138,6 +138,9 @@ networks:
   # Connection between Nginx front and load balanced servers
   frontend_network:
     driver: bridge
+
+  test_network:
+    driver: bridge
   #gitlab-runner_default:
    # driver: bridge
 volumes:

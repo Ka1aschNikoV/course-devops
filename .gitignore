@@ -7,3 +7,6 @@ test/node_modules
 ./node_modules
 node_modules
 gitlab-runner/config/config.toml
+hienoservu
+hienoservu.pub
+
