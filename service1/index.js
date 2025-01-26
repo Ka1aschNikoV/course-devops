@@ -409,7 +409,7 @@ async function resetSystem() {
 async function changeState(state) {
   const currState = await getSystemState();
   await setSystemState(state);
-  if(currState!==state) {
+  if(currState!==state && currState !== null) {
     await logStateChange(currState, state);
   }
   if(state==='INIT' && currState!=='INIT') {

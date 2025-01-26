@@ -25,15 +25,16 @@
         - /api GET -> Service request
         - /debug-monitor GET -> Monitor system
 
+
 Alternatively you can build the system locally (if for example the cPouta service has crashed at the time of inspection, lol):
 
-Installation locally:
+Installation:
 
     1. Install docker-compose on computer
     2. git clone -b project https://github.com/Ka1aschNikoV/course-devops.git
     3. cd course-devops
-    4. docker-compose build –-no-cache
-    5. docker-compose up -d
+    4. sudo docker-compose build –-no-cache
+    5. sudo docker-compose up -d
 
     Finally: 
         Enter in browser: 
@@ -42,6 +43,13 @@ Installation locally:
     Auth is done through either
         - Browser -> insert username password manually in prompt
         - API -> Send authentication header (like in curl example for PUT)
+
+
+    Then the test command with curl:
+
+      curl localhost:8197/state -X PUT -d ”PAUSED” -H "Content-Type: text/plain" -H "Accept: text/plain"
+
+    6. And finally: sudo docker-compose down
 
 **Data about the platform you used in development (hardware, CPU architecture, operating system, version of docker and docker-compose)**
 
@@ -65,8 +73,7 @@ Installation locally:
 
 • **Testing; tools and test cases**
 
-- Testing with mocha/chai. Testing is done with its own test container, and tests cover all API's and services in some form. Testing is quite general, since I did not want to spend
-  too much time with formatting tests to fit my purposes, the most complex one is probably the gatewayGetState service1 and service2 content detection. Test driven development is more evident in initial commits with a genuine effort made, there were some excessive spam commits when debugging the gitlab-runner + docker combo later on, below is a snippet of the commit history
+- Testing with mocha/chai. Testing is done with its own test container, and tests cover all API's and services in some form. Testing is quite general, since I did not want to spend too much time with formatting tests to fit my purposes, the most complex one is probably the gatewayGetState service1 and service2 content detection. Test driven development is more evident in initial commits with a genuine effort made, there were some excessive spam commits and accidental secret leaks when debugging the gitlab-runner + docker combo later on, below is a snippet of the earlier commit history
 
 <img src="./report_PNGS/ttd.png" width="800">
   
