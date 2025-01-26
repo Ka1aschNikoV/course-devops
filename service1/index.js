@@ -117,7 +117,6 @@ app.put('/state', async (req, res)  => {
       }
     },1000);
     return res.status(200).send(state);
-    
   }
 });
 
