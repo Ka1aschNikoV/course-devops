@@ -66,21 +66,24 @@ describe('Server Put State Tests', () => {
     
     it('should be in RUNNING state after setting it to RUNNING', async () => {
         
-        await axios.put(SERVER_URL, 'RUNNING', {
+        const response = await axios.put(SERVER_URL, 'RUNNING', {
             headers: {
                 'Content-Type': 'text/plain',
                 'Authorization': `Basic ${base64Auth}`, 
                 'X-Authenticated-User': 'user1' 
             },
         });
-        setTimeout(async () =>  {
-            const response = await axios.get(SERVER_URL, {
-            })
-            const state = response.data; 
-            expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
-        },2000);
-        
-        
+        expect(response.status).to.equal(200, 'Expected server to be in RUNNING state');
+            
+    });
+
+    it('should be in RUNNING', async () => {
+
+        const response = await axios.get(SERVER_URL, {
+        })
+        const state = response.data; 
+        expect(state).to.equal('RUNNING', 'Expected server to be in RUNNING state');
+
     });
 
     it('should be in PAUSED state after setting it to PAUSED', async () => {
@@ -122,7 +125,7 @@ describe('Server Put State Tests', () => {
     it('should be operational in RUNNING', async () => {
         const response = await axios.get(SERVER_URL, {
         })
-        expect(response.status).to.equal(200, 'Expected server to be inoperable when paused');
+        expect(response.status).to.equal(200, 'Expected server to be operable when RUNNING');
     });
 
     it('should be resetted when RUNNING -> INIT', async () => {
