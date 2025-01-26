@@ -30,33 +30,38 @@ const redis = new Redis({
 
 // Middleware to block operations if the system is paused or offline
 app.use(async (req, res, next) => {
-
+  try {
   // If service is marked as down, bounce the request
-  if (downtimeFlag) {
-    res.status(503).send('Service Unavailable (Server is down for 2 seconds)');
-    res.end();
-  }
-  const currState = await getSystemState();
-  if (currState === 'PAUSED' && !(req.path === '/state' && req.method === 'PUT')) {
-    res.status(503).send('System is currently paused. Please try again later.');
-  }
-  else if (currState === 'SHUTDOWN' && !(req.path === '/state' && req.method === 'PUT')) {
-    res.status(503).send('System is currently shutdown. Turn it on to continue use.');
-  }
-  else {
-    next();
-    await incrementMonitor();
-    if (!downtimeFlag) {
-      downtimeFlag = true;
-      console.log('Server is going down for 2 seconds after the response.');
+    if (downtimeFlag) {
+      return res.status(503).send('Service Unavailable (Server is down for 2 seconds)');
+    }
+    downtimeFlag = true;
 
+    
+    const currState = await getSystemState();
+    if (currState === 'PAUSED' && !(req.path === '/state' && req.method === 'PUT')) {
+      return res.status(503).send('System is currently paused. Please try again later.');
+    }
+    else if (currState === 'SHUTDOWN' && !(req.path === '/state' && req.method === 'PUT')) {
+      return res.status(503).send('System is currently shutdown. Turn it on to continue use.');
+    }
+    else {
+      next();
+      await incrementMonitor();
+      console.log('Server is going down for 2 seconds after the response.');
+      setTimeout(async () => {
       // Introduce a 2-second delay before the next request can be processed
-      setTimeout(() => {
+      
         downtimeFlag = false;  // Allow the server to handle requests again
         console.log('Server is back online.');
       }, 2000);  // Delay of 2 seconds
     }
+
   }
+  catch (err) {
+    return res.status(503).send("Too fast requests, slow down!")
+  }
+ 
 });
 
 /*
@@ -68,7 +73,7 @@ app.post('/shutdown', async (req, res) => {
   console.log('Shutdown request received. Sending command to host machine.');
   await changeState('SHUTDOWN');
   setTimeout(() => {
-    res.status(200).send('All containers shutdown');
+    
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop');
@@ -76,7 +81,8 @@ app.post('/shutdown', async (req, res) => {
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/test_container/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop');
-  }, 2000);
+  }, 1000);
+  return res.status(200).send('All containers shutdown');
 
 
 });
@@ -90,33 +96,38 @@ app.put('/state', async (req, res)  => {
 
   const currState = await getSystemState();
   if (currState === 'INIT' && !req.headers['x-authenticated-user']) {
-    res.status(403).send('Please login before use!');
+    return res.status(403).send('Please login before use!');
+
   }
   else {
     const state = req.body;
     // Validate the incoming state
     if (!['INIT', 'RUNNING', 'PAUSED', 'SHUTDOWN'].includes(state)) {
       return res.status(400).send('Invalid state. Allowed states: INIT, RUNNING, PAUSED, SHUTDOWN.');
+
     }
     // Check if the state is actually changing
     if (state === currState) {
       return res.status(200).send(`State is already ${state}. No changes made.`);
+
     }
 
     await changeState(state);
 
     // Handle system behavior based on the new state
-
-    res.status(200).send(state);
-    if(state === 'SHUTDOWN') {
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/test_container/stop');
-      sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop');
-    }
+    setTimeout(() => {
+      if(state === 'SHUTDOWN') {
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop');
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop');
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop');
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend3-1/stop');
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/nginx_frontend/stop');
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/test_container/stop');
+        sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop');
+      }
+    },1000)
+    return res.status(200).send(state);
+    
   }
 
 });
@@ -129,7 +140,7 @@ app.put('/state', async (req, res)  => {
 app.get('/state', async (req, res) => {
   const currState = await getSystemState();
   res.setHeader('Content-Type', 'text/plain'); // Respond as plain text
-  res.status(200).send(currState);
+  return res.status(200).send(currState);
 });
 
 /*
@@ -145,7 +156,7 @@ app.get('/run-log', (req, res) => {
 
   stream.on('error', (err) => {
     console.error('Error reading log file:', err);
-    res.status(500).send('Error reading log file');
+    return res.status(500).send('Error reading log file');
   });
 });
 
@@ -237,8 +248,7 @@ app.get('/debug-monitor', async (req,res) => {
 
     }
     res.setHeader('Content-Type', 'text/plain');
-    res.status(200).send(plainTextResponse);
-    res.end();
+    return res.status(200).send(plainTextResponse);
   });
 });
 

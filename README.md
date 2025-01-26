@@ -15,11 +15,11 @@
 
 - Testing the system can be done through addresses
     Example: http://86.50.231.95:8197/state
-    - http://86.50.231.95:8197/*something* -> API (username: user1, password: your_mom)
+    - http://86.50.231.95:8197/*something* -> API (**username: user1, password: your_mom**)
         - /state PUT & GET (PUT needs auth) -> System state management
         - /request GET -> Request service data
         - /run-log GET -> Run log
-    - http://86.50.231.95:8198/*something* -> Browser front (username: user1, password: your_mom)
+    - http://86.50.231.95:8198/*something* -> Browser front (**username: user1, password: your_mom**)
         - /controlpanel.html -> Main page
         - /shutdown POST -> Shutdown containers
         - /api GET -> Service request
