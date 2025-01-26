@@ -38,8 +38,8 @@ app.use(async (req, res, next) => {
   console.log('Server is going down for 2 seconds after the response.');
   setTimeout(() => {
     // Introduce a 2-second delay before the next request can be processed
-      downtimeFlag = false;  // Allow the server to handle requests again
-      console.log('Server is back online.');
+    downtimeFlag = false;  // Allow the server to handle requests again
+    console.log('Server is back online.');
   }, 2000);  // Delay of 2 seconds
   const currState = await getSystemState();
   if (currState === 'PAUSED' && !(req.path === '/state' && req.method === 'PUT')) {
