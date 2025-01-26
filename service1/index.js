@@ -36,8 +36,6 @@ app.use(async (req, res, next) => {
       return res.status(503).send('Service Unavailable (Server is down for 2 seconds)');
     }
     downtimeFlag = true;
-
-    
     const currState = await getSystemState();
     if (currState === 'PAUSED' && !(req.path === '/state' && req.method === 'PUT')) {
       return res.status(503).send('System is currently paused. Please try again later.');
@@ -56,10 +54,9 @@ app.use(async (req, res, next) => {
         console.log('Server is back online.');
       }, 2000);  // Delay of 2 seconds
     }
-
   }
   catch (err) {
-    return res.status(503).send("Too fast requests, slow down!")
+    return res.status(503).send('Too fast requests, slow down!');
   }
  
 });
@@ -97,7 +94,6 @@ app.put('/state', async (req, res)  => {
   const currState = await getSystemState();
   if (currState === 'INIT' && !req.headers['x-authenticated-user']) {
     return res.status(403).send('Please login before use!');
-
   }
   else {
     const state = req.body;
@@ -109,11 +105,8 @@ app.put('/state', async (req, res)  => {
     // Check if the state is actually changing
     if (state === currState) {
       return res.status(200).send(`State is already ${state}. No changes made.`);
-
     }
-
     await changeState(state);
-
     // Handle system behavior based on the new state
     setTimeout(() => {
       if(state === 'SHUTDOWN') {
@@ -125,7 +118,7 @@ app.put('/state', async (req, res)  => {
         sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/test_container/stop');
         sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/redis/stop');
       }
-    },1000)
+    },1000);
     return res.status(200).send(state);
     
   }
