@@ -97,6 +97,7 @@ Installation:
 
 <img src="./report_PNGS/pipeline_log.png" width="400">
 
+
 ### Reflections ###
 
 #### Main learnings and worst difficulties ####
@@ -122,4 +123,4 @@ Installation:
 
 **Give your estimate**
 
-- I spent about 80-90 hours total, and had fun through all of it, and learned a lot
+- I spent about 90-100 hours total, and had fun through all of it, and learned a lot
