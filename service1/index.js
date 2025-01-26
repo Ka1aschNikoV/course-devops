@@ -328,7 +328,6 @@ async function logStateChange(oldState, newState) {
     // Try to acquire a lock before writing
     try {
       const lockPath = `${RUN_FILE_PATH}.lock`;  // Lock file path
-<<<<<<< HEAD
       setTimeout(() => {
         lockfile.lock(lockPath, { retries: 10, retryWait: 100 }, (err) => {
           if (err) {
@@ -348,25 +347,6 @@ async function logStateChange(oldState, newState) {
     catch (error) {
       console.error(`Failed to log state change: ${error.message}`);
     }}, 100);
-=======
-      lockfile.lock(lockPath, { retries: 10, retryWait: 100 }, (err) => {
-        if (err) {
-          console.error('Could not acquire lock', err);
-          return;
-        }
-        fs.appendFileSync(RUN_FILE_PATH, logEntry, 'utf8');
-        console.log(`Logged state change: ${logEntry.trim()}`);
-        lockfile.unlock(lockPath, (err) => {
-          if (err) {
-            console.error('Could not release lock', err);
-          }
-        });
-      });
-    }
-    catch (error) {
-      console.error(`Failed to log state change: ${error.message}`);
-    }}, Math.random());
->>>>>>> 0395629 (best copes)
 }
 
 // Monitor user logins
