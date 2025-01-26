@@ -49,7 +49,6 @@ app.use(async (req, res, next) => {
       console.log('Server is going down for 2 seconds after the response.');
       setTimeout(async () => {
       // Introduce a 2-second delay before the next request can be processed
-      
         downtimeFlag = false;  // Allow the server to handle requests again
         console.log('Server is back online.');
       }, 2000);  // Delay of 2 seconds
@@ -58,7 +57,6 @@ app.use(async (req, res, next) => {
   catch (err) {
     return res.status(503).send('Too fast requests, slow down!');
   }
- 
 });
 
 /*
@@ -70,7 +68,6 @@ app.post('/shutdown', async (req, res) => {
   console.log('Shutdown request received. Sending command to host machine.');
   await changeState('SHUTDOWN');
   setTimeout(() => {
-    
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/service2/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend1-1/stop');
     sh('curl --unix-socket /var/run/docker.sock -X POST -d "{}" http://localhost/containers/backend2-1/stop');
@@ -122,7 +119,6 @@ app.put('/state', async (req, res)  => {
     return res.status(200).send(state);
     
   }
-
 });
 
 /*
