@@ -33,7 +33,7 @@ Installation:
     1. Install docker-compose on computer
     2. git clone -b project https://github.com/Ka1aschNikoV/course-devops.git
     3. cd course-devops
-    4. sudo docker-compose build –-no-cache
+    4. sudo docker-compose build --no-cache
     5. sudo docker-compose up -d
 
     Finally: 
@@ -47,7 +47,7 @@ Installation:
 
     Then the test command with curl:
 
-      curl localhost:8197/state -X PUT -d ”PAUSED” -H "Content-Type: text/plain" -H "Accept: text/plain"
+      curl localhost:8197/state -X PUT -d "PAUSED" -H "Content-Type: text/plain" -H "Accept: text/plain"
 
     6. And finally: sudo docker-compose down
 

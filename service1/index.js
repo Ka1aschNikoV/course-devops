@@ -368,7 +368,7 @@ function monitorLogs(logFile) {
 
           if (seenUsers === null && user !== '-') {
             await changeState('RUNNING');
-            trackSeenUser(user);
+            await trackSeenUser(user);
           }
         }
       });
