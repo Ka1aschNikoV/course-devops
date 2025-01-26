@@ -353,8 +353,6 @@ async function logStateChange(oldState, newState) {
 function monitorLogs(logFile) {
   fs.watchFile(logFile, (curr, prev) => {
     if (curr.size > prev.size) {
-      // Only proceed if not already locked
-      console.log('Locked');
       // New lines have been added, read the new data
       const stream = fs.createReadStream(logFile, { encoding: 'utf-8', flags: 'r', start: prev.size });
       const rl = readline.createInterface({ input: stream });

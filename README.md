@@ -45,7 +45,7 @@ Installation locally:
 
 **Data about the platform you used in development (hardware, CPU architecture, operating system, version of docker and docker-compose)**
 
-<img src="./environment.png" width="800">
+<img src="./report_PNGS/environment.png" width="800">
 
 - Processor: Coffee Lake Intel Core i7 9700k, x86
 - Docker: docker-1:27.3.1-1
@@ -56,7 +56,7 @@ Installation locally:
 
 • **Version management; use of branches etc**
 
-- Branch "project" was used, and is the only branch to be inspected. Push into GitLab repo triggers gitlab-runner actions
+- Branch "project" was used in both gitlab and github, and is the only branch to be inspected. Push into GitLab repo triggers gitlab-runner actions
 
 • **Building tools**
 
@@ -68,7 +68,7 @@ Installation locally:
 - Testing with mocha/chai. Testing is done with its own test container, and tests cover all API's and services in some form. Testing is quite general, since I did not want to spend
   too much time with formatting tests to fit my purposes, the most complex one is probably the gatewayGetState service1 and service2 content detection. Test driven development is more evident in initial commits with a genuine effort made, there were some excessive spam commits when debugging the gitlab-runner + docker combo later on, below is a snippet of the commit history
 
-<img src="./ttd.png" width="800">
+<img src="./report_PNGS/ttd.png" width="800">
   
 
 • **Packing**
@@ -88,7 +88,7 @@ Installation locally:
 
 **Include some kind of log of both failing test and passing.**
 
-<img src="./pipeline_log.png" width="400">
+<img src="./report_PNGS/pipeline_log.png" width="400">
 
 ### Reflections ###
 

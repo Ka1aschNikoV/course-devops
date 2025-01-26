@@ -113,7 +113,5 @@ describe('Request Response Tests', () => {
         expect(responseLogs.data).to.not.equal("", "Expected logs to not be wiped")
 
     });
+
 });
-
-
-

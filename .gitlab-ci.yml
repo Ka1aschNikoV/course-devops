@@ -37,14 +37,12 @@ build-job:
   before_script:
     # Install docker and docker-compose
     - apk add docker-compose docker
-    #- echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdinr
+    # Login to registry
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
     
   script:
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdin
-    - sleep 10
+    # Build and push images to registry
     - docker-compose -f docker-compose.yml build
-    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u dpniva --password-stdin
     - docker-compose -f docker-compose.yml push
     
   only:
@@ -65,9 +63,12 @@ test-job:
     DOCKER_DRIVER: overlay2
 
   before_script:
+    # Install docker and docker-compose, npm, nodejs
     - apk add docker-compose docker npm nodejs
+    # Install node deps.
     - npm install
-    - echo "$CI_REGISTRY_PASSWORD" | docker login compse140.devops-gitlab.rd.tuni.fi:5050 -u dpniva --password-stdin 
+    # Login to container registry
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
 
   script:
     # Start container services
